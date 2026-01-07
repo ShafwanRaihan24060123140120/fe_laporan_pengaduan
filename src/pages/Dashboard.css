@@ -42,6 +42,7 @@
   font-size: 52px;
   font-weight: 800;
   letter-spacing: 0.5px;
+  text-shadow: 0 0 20px rgba(255, 255, 255, 0.8), 0 0 40px rgba(255, 255, 255, 0.5);
 }
 
 .dashboard-subtitle {
@@ -80,7 +81,7 @@
 }
 
 .stat-value {
-  color: #2f2f2f;
+  color: #fff;
   font-size: 22px;
   margin-top: 18px;
 }
