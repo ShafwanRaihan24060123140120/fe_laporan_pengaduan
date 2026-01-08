@@ -1,3 +1,139 @@
+/* Overlay */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.62);
+  backdrop-filter: blur(8px) saturate(130%);
+  -webkit-backdrop-filter: blur(8px) saturate(130%);
+  z-index: 9999;
+  animation: fadeIn 200ms ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0 }
+  to { opacity: 1 }
+}
+
+/* Card */
+.modal-content {
+  position: relative;
+  width: min(520px, 92vw);
+  background: linear-gradient(180deg, #ffffff 0%, #fafafa 100%);
+  border-radius: 16px;
+  padding: 28px 24px 24px 24px;
+  border: 1px solid rgba(0,0,0,0.06);
+  box-shadow:
+    0 16px 40px rgba(0,0,0,0.22),
+    0 3px 10px rgba(0,0,0,0.06);
+  animation: popIn 220ms ease-out;
+}
+
+.modal-content::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 6px;
+  background: linear-gradient(90deg, #ff1a1a, #e00000);
+  border-top-left-radius: 16px;
+  border-top-right-radius: 16px;
+}
+
+@keyframes popIn {
+  from { transform: translateY(-10px) scale(0.98); opacity: 0 }
+  to { transform: translateY(0) scale(1); opacity: 1 }
+}
+
+/* Text */
+.modal-title {
+  margin: 6px 0 10px 0;
+  color: #101010;
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: .2px;
+}
+
+.modal-message {
+  margin: 0 0 18px 0;
+  color: #2c2c2c;
+  font-size: 15.5px;
+  line-height: 1.6;
+}
+
+/* Actions */
+.modal-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+
+/* Buttons – modern, accessible */
+.modal-btn {
+  appearance: none;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  padding: 12px 20px;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+  transition: background-color .18s ease, color .18s ease, transform .12s ease, box-shadow .18s ease, border-color .18s ease;
+  box-shadow: 0 1px 0 rgba(0,0,0,0.06);
+}
+
+.modal-btn:active {
+  transform: translateY(1px);
+}
+
+.modal-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(227, 6, 19, 0.25); /* ring merah telkom */
+}
+
+/* Ya (abu-abu) */
+.modal-btn-confirm {
+  background: #ececec;
+  color: #161616;
+  border-color: #e1e1e1;
+}
+
+.modal-btn-confirm:hover {
+  background: #dddddd;
+  border-color: #d6d6d6;
+}
+
+/* Tidak (merah telkom) */
+.modal-btn-cancel {
+  background: #e00000;
+  color: #ffffff;
+  border-color: #d10000;
+  box-shadow: 0 2px 8px rgba(224, 0, 0, 0.28);
+}
+
+.modal-btn-cancel:hover {
+  background: #c40000;
+  border-color: #b80000;
+}
+
+/* Responsive tweaks */
+@media (max-width: 420px) {
+  .modal-content { padding: 18px 16px }
+  .modal-title { font-size: 20px }
+  .modal-message { font-size: 15px }
+  .modal-actions { gap: 10px }
+  .modal-btn { width: 100% }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .modal-overlay, .modal-content { animation: none }
+  .modal-btn { transition: none }
+}
 .modal-overlay {
   position: fixed;
   inset: 0;

@@ -52,7 +52,7 @@ function Login({ setAuth }) {
                   }
                   localStorage.setItem('token', data.token);
                   if (setAuth) setAuth(true);
-                  navigate('/dashboard');
+                  navigate('/laporan-aset');
                 } catch (err) {
                   setError(err.message);
                 } finally {

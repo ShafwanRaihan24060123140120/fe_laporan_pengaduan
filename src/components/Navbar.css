@@ -1,13 +1,62 @@
 .navbar {
-  background: linear-gradient(180deg, #ffffff 0%, #f7f7f7 100%);
+  background: rgba(255,255,255,0.65);
+  backdrop-filter: blur(10px) saturate(120%);
+  -webkit-backdrop-filter: blur(10px) saturate(120%);
   padding: 12px 32px;
   display: flex;
-  justify-content: center; /* center the left group */
+  justify-content: center;
   align-items: center;
-  box-shadow: 0 3px 14px rgba(0,0,0,0.16);
-  border-bottom: 1px solid rgba(0,0,0,0.12);
-  position: relative; /* for right group absolute positioning */
-  z-index: 10;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+  border-bottom: 1px solid rgba(0,0,0,0.08);
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  gap: 24px;
+  position: relative;
+}
+
+.navbar-search {
+  position: relative;
+  width: 600px;
+  max-width: 70vw;
+}
+
+.navbar-search input {
+  width: 100%;
+  padding: 14px 52px 14px 20px;
+  border-radius: 32px;
+  border: 2px solid rgba(255,255,255,0.25);
+  font-size: 16px;
+  background: linear-gradient(135deg, #ff1a1a 0%, #e00000 100%);
+  color: #fff;
+  font-weight: 600;
+  box-shadow: 0 8px 20px rgba(224,0,0,0.3);
+  transition: all 0.25s ease;
+}
+
+.navbar-search input::placeholder {
+  color: rgba(255,255,255,0.85);
+  font-weight: 500;
+}
+
+.navbar-search input:focus {
+  outline: none;
+  border-color: rgba(255,255,255,0.45);
+  box-shadow: 0 12px 28px rgba(224,0,0,0.4), 0 0 0 3px rgba(255,255,255,0.2) inset;
+  transform: translateY(-2px);
+  background: linear-gradient(135deg, #ff2929 0%, #f00000 100%);
+}
+
+.navbar-search .search-icon {
+  position: absolute;
+  right: 18px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #fff;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  filter: drop-shadow(0 1px 2px rgba(0,0,0,0.2));
 }
 
 .navbar-left {
@@ -21,15 +70,30 @@
   text-decoration: none;
   font-weight: 700;
   font-size: 18px;
-  padding: 10px 18px;
-  border-radius: 999px;
-  transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+  padding: 10px 12px;
+  border-radius: 8px;
+  transition: color 0.2s ease;
+  position: relative;
 }
 
+.nav-item::after {
+  content: "";
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  bottom: 6px;
+  height: 3px;
+  border-radius: 3px;
+  background: linear-gradient(90deg, var(--telkom-red-light), var(--telkom-red));
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.18s ease;
+}
+
+.nav-item:hover::after { transform: scaleX(1); }
+
 .nav-item.active {
-  background: linear-gradient(180deg, #ff1a1a 0%, #e00000 100%);
-  color: #ffffff;
-  box-shadow: 0 4px 12px rgba(224,0,0,0.35);
+  color: #e00000;
 }
 
 .nav-item:hover {
@@ -72,6 +136,10 @@
   border-radius: 4px;
 }
 
+.profile-dropdown {
+  position: relative;
+}
+
 .admin-pill {
   background: linear-gradient(180deg, #ff1a1a 0%, #e00000 100%);
   color: #fff;
@@ -82,15 +150,88 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.admin-pill:hover {
+  box-shadow: 0 6px 16px rgba(224,0,0,0.45);
+  transform: translateY(-1px);
+}
+
+.admin-pill:active {
+  transform: translateY(0);
 }
 
 .profile-icon { display: inline-flex; line-height: 0; }
 .admin-name { display: inline-block; }
 
+.profile-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+  min-width: 200px;
+  overflow: hidden;
+  animation: menuSlideIn 0.2s ease;
+  border: 1px solid rgba(0,0,0,0.08);
+}
+
+@keyframes menuSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.profile-menu .menu-item {
+  display: block;
+  padding: 14px 20px;
+  color: #333;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 15px;
+  transition: all 0.2s ease;
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+
+.profile-menu .menu-item:last-child {
+  border-bottom: none;
+}
+
+.profile-menu .menu-item:hover {
+  background: linear-gradient(90deg, #ff1a1a10, #e0000010);
+  color: #e00000;
+  padding-left: 24px;
+}
+
+.profile-menu .menu-item.active {
+  background: linear-gradient(90deg, #ff1a1a15, #e0000015);
+  color: #e00000;
+  font-weight: 700;
+  border-left: 3px solid #e00000;
+}
+
 @media (max-width: 768px) {
   .navbar {
     padding: 12px 16px;
     flex-direction: column;
-    gap: 10px;
+    gap: 12px;
+  }
+  
+  .navbar-search {
+    max-width: 100%;
+  }
+  
+  .navbar-right {
+    width: 100%;
+    justify-content: space-between;
   }
 }

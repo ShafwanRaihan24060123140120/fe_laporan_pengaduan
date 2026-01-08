@@ -9,10 +9,9 @@ const {
   getReportById, 
   deleteReport, 
   updateReportStatus,
-  listVerifikasiUsers,
-  getVerifikasiUserByEmail,
-  approveVerifikasiUser,
-  rejectVerifikasiUser
+  listUsers,
+  createUser,
+  deleteUser
 } = require('./db');
 
 const app = express();
@@ -67,10 +66,21 @@ app.get('/api/reports', async (req, res) => {
     if (search) {
       const term = search.toLowerCase();
       rows = rows.filter(r => {
-        const email = (r.email_pelapor || '').toLowerCase();
-        const jenis = (r.jenis || '').toLowerCase();
-        const status = r.status === 'Selesai' ? 'selesai' : 'diproses';
-        return email.includes(term) || jenis.includes(term) || status.includes(term);
+        const id = (r.id || '').toLowerCase();
+        const namaPelapor = (r.email_pelapor || '').toLowerCase(); // now contains nama directly
+        const namaBarang = (r.nama_barang || '').toLowerCase();
+        const unit = (r.unit || '').toLowerCase();
+        const deskripsi = (r.deskripsi || '').toLowerCase();
+        const status = (r.status || '').toLowerCase();
+        const tanggal = (r.tanggal || '').toLowerCase();
+        
+        return id.includes(term) || 
+               namaPelapor.includes(term) || 
+               namaBarang.includes(term) || 
+               unit.includes(term) || 
+               deskripsi.includes(term) || 
+               status.includes(term) ||
+               tanggal.includes(term);
       });
     }
     
@@ -123,15 +133,14 @@ app.get('/api/dashboard/summary', async (req, res) => {
     // Diproses = semua laporan yang belum selesai (apapun statusnya selain 'Selesai')
     const dalamProses = totalReports - selesai;
 
-    const approvedUsers = await listVerifikasiUsers('approved');
-    const pendingVerifikasi = await listVerifikasiUsers('pending');
+    const users = await listUsers();
 
     res.json({
       totalReports,
       selesai,
       dalamProses,
-      totalUsersApproved: approvedUsers.length,
-      verifikasiPending: pendingVerifikasi.length
+      totalUsersApproved: users.length,
+      verifikasiPending: 0
     });
   } catch (e) {
     console.error(e);
@@ -139,48 +148,39 @@ app.get('/api/dashboard/summary', async (req, res) => {
   }
 });
 
-// Verifikasi API
-app.get('/api/verifikasi', async (req, res) => {
+// Users Management API
+app.get('/api/users', async (req, res) => {
   try {
-    const rows = await listVerifikasiUsers('pending');
+    const rows = await listUsers();
     res.json(rows);
   } catch (e) {
     console.error(e);
-    res.status(500).json({ error: 'Failed to list verifikasi users' });
+    res.status(500).json({ error: 'Failed to list users' });
   }
 });
 
-app.get('/api/verifikasi/:email', async (req, res) => {
+app.post('/api/users', async (req, res) => {
   try {
-    const email = decodeURIComponent(req.params.email);
-    const row = await getVerifikasiUserByEmail(email);
-    if (!row) return res.status(404).json({ error: 'User not found' });
-    res.json(row);
+    const { nama } = req.body || {};
+    if (!nama) {
+      return res.status(400).json({ error: 'Nama required' });
+    }
+
+    await createUser(nama);
+    res.json({ ok: true, message: 'User created successfully' });
   } catch (e) {
     console.error(e);
-    res.status(500).json({ error: 'Failed to get user' });
+    res.status(500).json({ error: 'Failed to create user' });
   }
 });
 
-app.put('/api/verifikasi/:email/terima', async (req, res) => {
+app.delete('/api/users/:id', async (req, res) => {
   try {
-    const email = decodeURIComponent(req.params.email);
-    await approveVerifikasiUser(email);
-    res.json({ ok: true, message: 'User approved' });
+    await deleteUser(req.params.id);
+    res.json({ ok: true, message: 'User deleted successfully' });
   } catch (e) {
     console.error(e);
-    res.status(500).json({ error: 'Failed to approve user' });
-  }
-});
-
-app.put('/api/verifikasi/:email/tolak', async (req, res) => {
-  try {
-    const email = decodeURIComponent(req.params.email);
-    await rejectVerifikasiUser(email);
-    res.json({ ok: true, message: 'User rejected' });
-  } catch (e) {
-    console.error(e);
-    res.status(500).json({ error: 'Failed to reject user' });
+    res.status(500).json({ error: 'Failed to delete user' });
   }
 });
 

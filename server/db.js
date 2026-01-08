@@ -53,15 +53,9 @@ async function init() {
     status TEXT DEFAULT 'Pending'
   )`);
 
-  await run(db, `CREATE TABLE IF NOT EXISTS verifikasi_users (
+  await run(db, `CREATE TABLE IF NOT EXISTS users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    email TEXT UNIQUE NOT NULL,
-    nama TEXT,
-    no_pegawai TEXT,
-    alamat_kantor TEXT,
-    unit TEXT,
-    status TEXT DEFAULT 'pending',
-    verified_at TEXT,
+    nama TEXT NOT NULL,
     created_at TEXT DEFAULT CURRENT_TIMESTAMP
   )`);
 
@@ -76,106 +70,53 @@ async function init() {
   if (!countReports || countReports.c === 0) {
     const reports = [
       // Shared Service & General Support (SSGS)
-      { unit: 'Shared Service & General Support', code: 'SSGS', num: 1, email: 'casishafwanraihan@gmail.com', jenis: 'Aset Rusak', barang: 'Atap', tanggal: '01/08/24', deskripsi: 'Atap bocor di ruang rapat', status: 'Selesai' },
-      { unit: 'Shared Service & General Support', code: 'SSGS', num: 2, email: 'user2@telkom.co.id', jenis: 'Aset Rusak', barang: 'AC', tanggal: '05/08/24', deskripsi: 'AC tidak dingin, butuh service', status: 'Selesai' },
-      { unit: 'Shared Service & General Support', code: 'SSGS', num: 3, email: 'admin@telkom.co.id', jenis: 'Aset Hilang', barang: 'Kursi', tanggal: '08/08/24', deskripsi: 'Kursi kantor hilang dari ruang meeting', status: 'Dalam Proses' },
-      { unit: 'Shared Service & General Support', code: 'SSGS', num: 4, email: 'staff@telkom.co.id', jenis: 'Aset Rusak', barang: 'Lampu', tanggal: '10/08/24', deskripsi: 'Lampu neon mati tidak menyala', status: 'Dalam Proses' },
-      { unit: 'Shared Service & General Support', code: 'SSGS', num: 5, email: 'casishafwanraihan@gmail.com', jenis: 'Aset Rusak', barang: 'Pintu', tanggal: '12/08/24', deskripsi: 'Pintu ruang server susah ditutup', status: 'Pending' },
-      { unit: 'Shared Service & General Support', code: 'SSGS', num: 6, email: 'user2@telkom.co.id', jenis: 'Aset Hilang', barang: 'Kabel', tanggal: '15/08/24', deskripsi: 'Kabel HDMI hilang dari ruang presentasi', status: 'Pending' },
+      { unit: 'Shared Service & General Support', code: 'SSGS', num: 1, nama: 'Shafwan Raihan', jenis: 'Aset Rusak', barang: 'Atap', tanggal: '01/08/24', deskripsi: 'Atap bocor di ruang rapat', status: 'Done' },
+      { unit: 'Shared Service & General Support', code: 'SSGS', num: 2, nama: 'Ahmad Subagyo', jenis: 'Aset Rusak', barang: 'AC', tanggal: '05/08/24', deskripsi: 'AC tidak dingin, butuh service', status: 'Done' },
+      { unit: 'Shared Service & General Support', code: 'SSGS', num: 3, nama: 'Rina Kusuma', jenis: 'Aset Hilang', barang: 'Kursi', tanggal: '08/08/24', deskripsi: 'Kursi kantor hilang dari ruang meeting', status: 'In Progress' },
+      { unit: 'Shared Service & General Support', code: 'SSGS', num: 4, nama: 'Budi Santoso', jenis: 'Aset Rusak', barang: 'Lampu', tanggal: '10/08/24', deskripsi: 'Lampu neon mati tidak menyala', status: 'In Progress' },
+      { unit: 'Shared Service & General Support', code: 'SSGS', num: 5, nama: 'Shafwan Raihan', jenis: 'Aset Rusak', barang: 'Pintu', tanggal: '12/08/24', deskripsi: 'Pintu ruang server susah ditutup', status: 'To-Do' },
+      { unit: 'Shared Service & General Support', code: 'SSGS', num: 6, nama: 'Ahmad Subagyo', jenis: 'Aset Hilang', barang: 'Kabel', tanggal: '15/08/24', deskripsi: 'Kabel HDMI hilang dari ruang presentasi', status: 'To-Do' },
       
       // IT Department (ITD)
-      { unit: 'IT Department', code: 'ITD', num: 1, email: 'admin@telkom.co.id', jenis: 'Aset Rusak', barang: 'Komputer', tanggal: '02/08/24', deskripsi: 'Komputer tidak bisa booting, layar hitam', status: 'Selesai' },
-      { unit: 'IT Department', code: 'ITD', num: 2, email: 'staff@telkom.co.id', jenis: 'Aset Rusak', barang: 'Printer', tanggal: '06/08/24', deskripsi: 'Printer paper jam terus menerus', status: 'Dalam Proses' },
-      { unit: 'IT Department', code: 'ITD', num: 3, email: 'casishafwanraihan@gmail.com', jenis: 'Aset Rusak', barang: 'Mouse', tanggal: '09/08/24', deskripsi: 'Mouse wireless tidak konek', status: 'Dalam Proses' },
-      { unit: 'IT Department', code: 'ITD', num: 4, email: 'user2@telkom.co.id', jenis: 'Aset Hilang', barang: 'Keyboard', tanggal: '13/08/24', deskripsi: 'Keyboard mechanical hilang dari meja', status: 'Pending' },
-      { unit: 'IT Department', code: 'ITD', num: 5, email: 'admin@telkom.co.id', jenis: 'Aset Rusak', barang: 'Monitor', tanggal: '16/08/24', deskripsi: 'Monitor bergaris, layar rusak', status: 'Pending' },
-      { unit: 'IT Department', code: 'ITD', num: 6, email: 'staff@telkom.co.id', jenis: 'Aset Rusak', barang: 'UPS', tanggal: '18/08/24', deskripsi: 'UPS bunyi beep terus, baterai drop', status: 'Pending' },
+      { unit: 'IT Department', code: 'ITD', num: 1, nama: 'Rina Kusuma', jenis: 'Aset Rusak', barang: 'Komputer', tanggal: '02/08/24', deskripsi: 'Komputer tidak bisa booting, layar hitam', status: 'Done' },
+      { unit: 'IT Department', code: 'ITD', num: 2, nama: 'Budi Santoso', jenis: 'Aset Rusak', barang: 'Printer', tanggal: '06/08/24', deskripsi: 'Printer paper jam terus menerus', status: 'In Progress' },
+      { unit: 'IT Department', code: 'ITD', num: 3, nama: 'Shafwan Raihan', jenis: 'Aset Rusak', barang: 'Mouse', tanggal: '09/08/24', deskripsi: 'Mouse wireless tidak konek', status: 'In Progress' },
+      { unit: 'IT Department', code: 'ITD', num: 4, nama: 'Ahmad Subagyo', jenis: 'Aset Hilang', barang: 'Keyboard', tanggal: '13/08/24', deskripsi: 'Keyboard mechanical hilang dari meja', status: 'To-Do' },
+      { unit: 'IT Department', code: 'ITD', num: 5, nama: 'Rina Kusuma', jenis: 'Aset Rusak', barang: 'Monitor', tanggal: '16/08/24', deskripsi: 'Monitor bergaris, layar rusak', status: 'To-Do' },
+      { unit: 'IT Department', code: 'ITD', num: 6, nama: 'Budi Santoso', jenis: 'Aset Rusak', barang: 'UPS', tanggal: '18/08/24', deskripsi: 'UPS bunyi beep terus, baterai drop', status: 'To-Do' },
       
       // Finance (FIN)
-      { unit: 'Finance', code: 'FIN', num: 1, email: 'casishafwanraihan@gmail.com', jenis: 'Aset Rusak', barang: 'Meja', tanggal: '03/08/24', deskripsi: 'Meja kerja kakinya patah', status: 'Selesai' },
-      { unit: 'Finance', code: 'FIN', num: 2, email: 'user2@telkom.co.id', jenis: 'Aset Rusak', barang: 'Kursi', tanggal: '07/08/24', deskripsi: 'Kursi roda macet tidak bisa berputar', status: 'Dalam Proses' },
-      { unit: 'Finance', code: 'FIN', num: 3, email: 'admin@telkom.co.id', jenis: 'Aset Rusak', barang: 'Kalkulator', tanggal: '11/08/24', deskripsi: 'Kalkulator mati, baterai habis', status: 'Dalam Proses' },
-      { unit: 'Finance', code: 'FIN', num: 4, email: 'staff@telkom.co.id', jenis: 'Aset Hilang', barang: 'Stapler', tanggal: '14/08/24', deskripsi: 'Stapler besar hilang dari meja kasir', status: 'Pending' },
-      { unit: 'Finance', code: 'FIN', num: 5, email: 'casishafwanraihan@gmail.com', jenis: 'Aset Rusak', barang: 'Lemari', tanggal: '17/08/24', deskripsi: 'Lemari arsip pintu patah', status: 'Pending' },
+      { unit: 'Finance', code: 'FIN', num: 1, nama: 'Shafwan Raihan', jenis: 'Aset Rusak', barang: 'Meja', tanggal: '03/08/24', deskripsi: 'Meja kerja kakinya patah', status: 'Done' },
+      { unit: 'Finance', code: 'FIN', num: 2, nama: 'Ahmad Subagyo', jenis: 'Aset Rusak', barang: 'Kursi', tanggal: '07/08/24', deskripsi: 'Kursi roda macet tidak bisa berputar', status: 'In Progress' },
+      { unit: 'Finance', code: 'FIN', num: 3, nama: 'Rina Kusuma', jenis: 'Aset Rusak', barang: 'Kalkulator', tanggal: '11/08/24', deskripsi: 'Kalkulator mati, baterai habis', status: 'In Progress' },
+      { unit: 'Finance', code: 'FIN', num: 4, nama: 'Budi Santoso', jenis: 'Aset Hilang', barang: 'Stapler', tanggal: '14/08/24', deskripsi: 'Stapler besar hilang dari meja kasir', status: 'To-Do' },
+      { unit: 'Finance', code: 'FIN', num: 5, nama: 'Shafwan Raihan', jenis: 'Aset Rusak', barang: 'Lemari', tanggal: '17/08/24', deskripsi: 'Lemari arsip pintu patah', status: 'To-Do' },
       
       // HR (HRD)
-      { unit: 'HR', code: 'HRD', num: 1, email: 'user2@telkom.co.id', jenis: 'Aset Rusak', barang: 'AC', tanggal: '04/08/24', deskripsi: 'AC bocor menetes air', status: 'Selesai' },
-      { unit: 'HR', code: 'HRD', num: 2, email: 'admin@telkom.co.id', jenis: 'Aset Rusak', barang: 'Telepon', tanggal: '08/08/24', deskripsi: 'Telepon kantor suara tidak jelas', status: 'Dalam Proses' },
-      { unit: 'HR', code: 'HRD', num: 3, email: 'staff@telkom.co.id', jenis: 'Aset Hilang', barang: 'Whiteboard Marker', tanggal: '12/08/24', deskripsi: 'Marker whiteboard set lengkap hilang', status: 'Pending' },
-      { unit: 'HR', code: 'HRD', num: 4, email: 'casishafwanraihan@gmail.com', jenis: 'Aset Rusak', barang: 'Proyektor', tanggal: '15/08/24', deskripsi: 'Proyektor tidak fokus, gambar blur', status: 'Pending' },
-      { unit: 'HR', code: 'HRD', num: 5, email: 'user2@telkom.co.id', jenis: 'Aset Rusak', barang: 'Scanner', tanggal: '19/08/24', deskripsi: 'Scanner tidak terdeteksi komputer', status: 'Pending' }
+      { unit: 'HR', code: 'HRD', num: 1, nama: 'Ahmad Subagyo', jenis: 'Aset Rusak', barang: 'AC', tanggal: '04/08/24', deskripsi: 'AC bocor menetes air', status: 'Done' },
+      { unit: 'HR', code: 'HRD', num: 2, nama: 'Rina Kusuma', jenis: 'Aset Rusak', barang: 'Telepon', tanggal: '08/08/24', deskripsi: 'Telepon kantor suara tidak jelas', status: 'In Progress' },
+      { unit: 'HR', code: 'HRD', num: 3, nama: 'Budi Santoso', jenis: 'Aset Hilang', barang: 'Whiteboard Marker', tanggal: '12/08/24', deskripsi: 'Marker whiteboard set lengkap hilang', status: 'To-Do' },
+      { unit: 'HR', code: 'HRD', num: 4, nama: 'Shafwan Raihan', jenis: 'Aset Rusak', barang: 'Proyektor', tanggal: '15/08/24', deskripsi: 'Proyektor tidak fokus, gambar blur', status: 'To-Do' },
+      { unit: 'HR', code: 'HRD', num: 5, nama: 'Ahmad Subagyo', jenis: 'Aset Rusak', barang: 'Scanner', tanggal: '19/08/24', deskripsi: 'Scanner tidak terdeteksi komputer', status: 'To-Do' }
     ];
 
     for (const r of reports) {
       const id = `${r.code}${r.num.toString().padStart(3, '0')}`;
+      // Generate dummy image URL based on report type
+      const dummyImages = [
+        'https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&h=600&fit=crop',
+        'https://images.unsplash.com/photo-1497366811353-6870744d04b2?w=800&h=600&fit=crop',
+        'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800&h=600&fit=crop',
+        'https://images.unsplash.com/photo-1497215728101-856f4ea42174?w=800&h=600&fit=crop',
+        'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=800&h=600&fit=crop'
+      ];
+      const randomImage = dummyImages[Math.floor(Math.random() * dummyImages.length)];
       await run(db,
         'INSERT INTO reports (id, email_pelapor, jenis, nama_barang, tanggal, unit, deskripsi, image_url, status) VALUES (?,?,?,?,?,?,?,?,?)',
-        [id, r.email, r.jenis, r.barang, r.tanggal, r.unit, r.deskripsi, '', r.status]
+        [id, r.nama, r.jenis, r.barang, r.tanggal, r.unit, r.deskripsi, randomImage, r.status]
       );
     }
     console.log(`Seeded ${reports.length} sample reports with varied data`);
-  }
-
-  const countVerifikasi = await get(db, 'SELECT COUNT(1) as c FROM verifikasi_users');
-  if (!countVerifikasi || countVerifikasi.c === 0) {
-    const verifikasiUsers = [
-      {
-        email: 'tephenndrewpakpahan@gmail.com',
-        nama: 'Stephen Andrew Pakpahan',
-        no_pegawai: '240601231401901',
-        alamat_kantor: 'Telkom Witel Jakarta Utara, 16, Jl. Yos Sudarso No.23-24, RT.16/RW.6 14320 Tanjung Priok Daerah Khusus ibukota Jakarta',
-        unit: 'Shared Service & General Support'
-      },
-      {
-        email: 'michaelsirait@gmail.com',
-        nama: 'Michael Sirait',
-        no_pegawai: '240601231401902',
-        alamat_kantor: 'Telkom Witel Jakarta Selatan, Jl. Gatot Subroto No.52, Jakarta Selatan 12950',
-        unit: 'IT Department'
-      },
-      {
-        email: 'zakyambadar@gmail.com',
-        nama: 'Zaky Ambadar',
-        no_pegawai: '240601231401903',
-        alamat_kantor: 'Telkom Witel Jakarta Barat, Jl. S. Parman Kav.8, Jakarta Barat 11480',
-        unit: 'Finance'
-      },
-      {
-        email: 'rifqiavaldi@gmail.com',
-        nama: 'Rifqi Avaldi',
-        no_pegawai: '240601231401904',
-        alamat_kantor: 'Telkom Witel Jakarta Timur, Jl. Ahmad Yani, Jakarta Timur 13210',
-        unit: 'HR'
-      },
-      {
-        email: 'fauzanhadi@gmail.com',
-        nama: 'Fauzan Hadi',
-        no_pegawai: '240601231401905',
-        alamat_kantor: 'Telkom Witel Jakarta Pusat, Jl. MH Thamrin No.10, Jakarta Pusat 10230',
-        unit: 'Shared Service & General Support'
-      },
-      {
-        email: 'elangnukmi@gmail.com',
-        nama: 'Elang Nukmi',
-        no_pegawai: '240601231401906',
-        alamat_kantor: 'Telkom Witel Bekasi, Jl. Ir. H. Juanda No.180, Bekasi 17121',
-        unit: 'IT Department'
-      },
-      {
-        email: 'muhzakyanwar@gmail.com',
-        nama: 'Muhammad Zaky Anwar',
-        no_pegawai: '240601231401907',
-        alamat_kantor: 'Telkom Witel Tangerang, Jl. Daan Mogot Km.11, Tangerang 15119',
-        unit: 'Finance'
-      }
-    ];
-    for (const user of verifikasiUsers) {
-      await run(db,
-        'INSERT INTO verifikasi_users (email, nama, no_pegawai, alamat_kantor, unit) VALUES (?,?,?,?,?)',
-        [user.email, user.nama, user.no_pegawai, user.alamat_kantor, user.unit]
-      );
-    }
-    console.log('Seeded 7 verifikasi users');
   }
   return db;
 }
@@ -210,26 +151,22 @@ module.exports = {
     const db = openDb();
     return run(db, 'UPDATE reports SET status = ? WHERE id = ?', [status, id]);
   },
-  // helpers for verifikasi users
-  listVerifikasiUsers: (status = 'pending') => {
+  // helpers for users management
+  listUsers: () => {
     const db = openDb();
     return new Promise((resolve, reject) => {
-      db.all('SELECT * FROM verifikasi_users WHERE status = ? ORDER BY created_at DESC', [status], (err, rows) => {
+      db.all('SELECT id, nama, created_at FROM users ORDER BY created_at DESC', [], (err, rows) => {
         if (err) return reject(err);
         resolve(rows);
       });
     });
   },
-  getVerifikasiUserByEmail: (email) => {
+  createUser: (nama) => {
     const db = openDb();
-    return get(db, 'SELECT * FROM verifikasi_users WHERE email = ?', [email]);
+    return run(db, 'INSERT INTO users (nama) VALUES (?)', [nama]);
   },
-  approveVerifikasiUser: (email) => {
+  deleteUser: (id) => {
     const db = openDb();
-    return run(db, 'UPDATE verifikasi_users SET status = ?, verified_at = CURRENT_TIMESTAMP WHERE email = ?', ['approved', email]);
-  },
-  rejectVerifikasiUser: (email) => {
-    const db = openDb();
-    return run(db, 'UPDATE verifikasi_users SET status = ?, verified_at = CURRENT_TIMESTAMP WHERE email = ?', ['rejected', email]);
+    return run(db, 'DELETE FROM users WHERE id = ?', [id]);
   }
 };

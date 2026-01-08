@@ -5,16 +5,45 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  background: #111;
+  background: linear-gradient(180deg, #ffffff 0%, #f7f7f9 100%);
 }
 
 .login-page::before {
   content: "";
   position: absolute;
   inset: 0;
-  /* Use image from src/assets to avoid depending on public */
-  background: url('../assets/telkom-bg.jpg') center/cover no-repeat;
+  /* Decorative gradient layers, no image */
+  background:
+    radial-gradient(900px 600px at 10% -10%, rgba(227,6,19,0.18), rgba(227,6,19,0) 60%),
+    radial-gradient(800px 520px at 95% 0%, rgba(171,0,0,0.20), rgba(171,0,0,0) 58%);
   opacity: 1;
+}
+
+.login-page::after {
+  content: "";
+  position: absolute;
+  width: 680px;
+  height: 680px;
+  right: -140px;
+  top: -140px;
+  background: radial-gradient(50% 50% at 50% 50%, rgba(224,0,0,0.32) 0%, rgba(224,0,0,0) 70%);
+  filter: blur(80px);
+  animation: floatBlob 12s ease-in-out infinite alternate;
+}
+
+@keyframes floatBlob {
+  from { transform: translateY(0) rotate(0deg) scale(1) }
+  to   { transform: translateY(30px) rotate(8deg) scale(1.05) }
+}
+
+/* Animated mesh gradient overlay */
+.login-page::before {
+  animation: gradientShift 20s ease infinite;
+}
+
+@keyframes gradientShift {
+  0%, 100% { opacity: 1 }
+  50% { opacity: 0.85 }
 }
 
 .login-page::after {
@@ -55,14 +84,24 @@
   padding: 0 48px 48px 48px;
 }
 
+.login-hero {
+  position: relative;
+}
+
 .login-hero-title {
-  color: #fff;
+  color: #e30613;
   font-size: 84px;
-  font-weight: 700;
+  font-weight: 800;
   line-height: 0.98;
   letter-spacing: 1px;
   text-transform: uppercase;
-  text-shadow: 0 3px 14px rgba(0,0,0,0.6);
+  text-shadow: 0 1px 0 rgba(255,255,255,0.6);
+  animation: titleSlide 0.6s ease-out;
+}
+
+@keyframes titleSlide {
+  from { opacity: 0; transform: translateX(-30px); }
+  to { opacity: 1; transform: translateX(0); }
 }
 
 /* Red translucent card */
@@ -70,11 +109,18 @@
 }
 
 .login-card {
-  background: rgba(171, 0, 0, 0.72);
-  backdrop-filter: blur(2px);
+  background: linear-gradient(180deg, rgba(227,6,19,0.9) 0%, rgba(171,0,0,0.88) 100%);
+  backdrop-filter: blur(3px);
   padding: 38px 34px;
   border-radius: 28px;
   box-shadow: 0 18px 40px rgba(0,0,0,0.45);
+  border: 1px solid rgba(255,255,255,0.12);
+  animation: cardReveal 0.5s ease-out;
+}
+
+@keyframes cardReveal {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .login-card-title {
@@ -159,11 +205,17 @@
   font-size: 16px;
   cursor: pointer;
   box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+  transition: transform .15s ease, box-shadow .15s ease;
 }
 
 .login-submit:disabled {
   opacity: 0.7;
   cursor: not-allowed;
+}
+
+.login-submit:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 24px rgba(0,0,0,0.28);
 }
 
 /* Responsive */
@@ -176,5 +228,56 @@
   .login-hero-title {
     font-size: 52px;
     text-align: left;
+  }
+}
+
+/* Moving Silhouettes */
+.login-page::after {
+  content: "";
+  position: absolute;
+  width: 300px;
+  height: 300px;
+  right: 15%;
+  top: 20%;
+  background: 
+    radial-gradient(circle at 30% 30%, rgba(224,0,0,0.08) 0%, transparent 50%),
+    radial-gradient(circle at 70% 60%, rgba(255,26,26,0.06) 0%, transparent 50%);
+  clip-path: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg"><clipPath id="blob"><path d="M50,10 Q80,30 90,60 T70,90 Q40,100 20,80 T10,40 Q20,15 50,10 Z"/></clipPath></svg>#blob');
+  animation: silhouetteMove1 20s ease-in-out infinite;
+  opacity: 0.6;
+}
+
+@keyframes silhouetteMove1 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  25% { transform: translate(-40px, 30px) scale(1.1); }
+  50% { transform: translate(30px, -20px) scale(0.9); }
+  75% { transform: translate(-20px, -30px) scale(1.05); }
+}
+
+.login-hero::before {
+  content: "";
+  position: absolute;
+  width: 250px;
+  height: 250px;
+  left: -80px;
+  top: -60px;
+  background: linear-gradient(135deg, rgba(227,6,19,0.06) 0%, rgba(171,0,0,0.03) 100%);
+  border-radius: 63% 37% 54% 46% / 55% 48% 52% 45%;
+  animation: silhouetteMove2 25s ease-in-out infinite reverse;
+  opacity: 0.5;
+}
+
+@keyframes silhouetteMove2 {
+  0%, 100% { 
+    transform: translate(0, 0) rotate(0deg);
+    border-radius: 63% 37% 54% 46% / 55% 48% 52% 45%;
+  }
+  33% { 
+    transform: translate(50px, -30px) rotate(120deg);
+    border-radius: 37% 63% 46% 54% / 48% 55% 45% 52%;
+  }
+  66% { 
+    transform: translate(-30px, 40px) rotate(240deg);
+    border-radius: 54% 46% 63% 37% / 52% 45% 55% 48%;
   }
 }

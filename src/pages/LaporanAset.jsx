@@ -4,6 +4,22 @@ import './LaporanAset.css';
 
 import { useEffect, useState } from 'react';
 
+const statusMap = {
+  'Pending': 'To-Do',
+  'Dalam Proses': 'Processed',
+  'Selesai': 'Done',
+  'To-Do': 'To-Do',
+  'In Progress': 'Processed',
+  'Processed': 'Processed',
+  'Done': 'Done'
+};
+
+const getStatusClass = (status) => {
+  if (status === 'Selesai' || status === 'Done') return 'status-done';
+  if (status === 'Dalam Proses' || status === 'In Progress' || status === 'Processed') return 'status-in-progress';
+  return 'status-to-do';
+};
+
 function useReports(searchTerm) {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -29,27 +45,12 @@ function useReports(searchTerm) {
 
 function LaporanAset() {
   const [searchTerm, setSearchTerm] = useState('');
-  const { items: all, loading, error } = useReports(searchTerm);
-  const items = all.map(r => ({ id: r.id, title: r.id, img: r.image_url || 'https://via.placeholder.com/200x180.png?text=Foto' }));
+  const { items, loading, error } = useReports(searchTerm);
   
   return (
     <div className="laporan-page">
-      <Navbar />
+      <Navbar searchTerm={searchTerm} onSearchChange={setSearchTerm} />
       <div className="laporan-wrap">
-        <div className="laporan-search">
-          <input 
-            type="text" 
-            placeholder="Cari berdasarkan Email Pelapor, Jenis, Status" 
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-          <span className="search-icon" aria-hidden="true">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-              <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
-            </svg>
-          </span>
-        </div>
-
         {loading && <div style={{textAlign:'center', color:'#666', padding:'20px'}}>Memuat data…</div>}
         {!loading && error && (
           <div style={{textAlign:'center', color:'#b00000', padding:'20px'}}>
@@ -62,13 +63,33 @@ function LaporanAset() {
         )}
 
         {!loading && !error && items.length > 0 && (
-          <div className="laporan-grid">
-            {items.map((item) => (
-              <Link key={item.id} to={`/laporan/${item.id}`} className="laporan-card">
-                <div className="laporan-img" style={{ backgroundImage: `url(${item.img})` }} />
-                <div className="laporan-title">{item.title}</div>
-              </Link>
-            ))}
+          <div className="laporan-table-container">
+            <table className="laporan-table">
+              <thead>
+                <tr>
+                  <th>Kode Laporan</th>
+                  <th>Nama Pelapor</th>
+                  <th>Lokasi Unit</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {items.map((item, index) => (
+                  <tr key={item.id} onClick={() => window.location.href = `/laporan/${item.id}`} style={{cursor: 'pointer'}}>
+                    <td>
+                      <span className="table-code">{item.id}</span>
+                    </td>
+                    <td>{item.email_pelapor || '-'}</td>
+                    <td>{item.unit || '-'}</td>
+                    <td>
+                      <span className={`status-badge ${getStatusClass(item.status)}`}>
+                        {statusMap[item.status] || item.status || 'To-Do'}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         )}
       </div>

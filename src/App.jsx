@@ -1,9 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import Login from './pages/Login';
-import Dashboard from './pages/Dashboard';
-import Verifikasi from './pages/Verifikasi';
-import VerifikasiDetail from './pages/VerifikasiDetail';
+import ManageUsers from './pages/ManageUsers';
 import LaporanAset from './pages/LaporanAset';
 import DetailLaporan from './pages/DetailLaporan';
 import './App.css';
@@ -43,15 +41,7 @@ function App() {
         <Route path="/login" element={<Login setAuth={setIsAuthenticated} />} />
         <Route 
           path="/verifikasi" 
-          element={isAuthenticated ? <Verifikasi /> : <Navigate to="/login" />} 
-        />
-        <Route
-          path="/verifikasi/:id"
-          element={isAuthenticated ? <VerifikasiDetail /> : <Navigate to="/login" />}
-        />
-        <Route 
-          path="/dashboard" 
-          element={isAuthenticated ? <Dashboard /> : <Navigate to="/login" />} 
+          element={isAuthenticated ? <ManageUsers /> : <Navigate to="/login" />} 
         />
         <Route 
           path="/laporan-aset" 
