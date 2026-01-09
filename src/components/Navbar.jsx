@@ -53,7 +53,7 @@ function Navbar({ searchTerm, onSearchChange }) {
         <div className="navbar-search">
           <input 
             type="text" 
-            placeholder="Cari berdasarkan Email Pelapor, Jenis, Status" 
+            placeholder="Cari berdasarkan Pelapor, Lokasi, Tanggal, Aset, Deskripsi" 
             value={searchTerm || ''}
             onChange={(e) => onSearchChange && onSearchChange(e.target.value)}
           />
