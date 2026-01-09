@@ -6,7 +6,7 @@ function ConfirmModal({ isOpen, title, message, onConfirm, onCancel }) {
   return (
     <div className="modal-overlay" onClick={onCancel}>
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-        <h2 className="modal-title">{title}</h2>
+        {title && <h2 className="modal-title">{title}</h2>}
         <p className="modal-message">{message}</p>
         <div className="modal-actions">
           <button className="modal-btn modal-btn-confirm" onClick={onConfirm}>Ya</button>

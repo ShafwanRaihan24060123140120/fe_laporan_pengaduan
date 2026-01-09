@@ -6,45 +6,93 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  gap: 24px;
   box-shadow: 0 6px 20px rgba(0,0,0,0.12);
   border-bottom: 1px solid rgba(0,0,0,0.08);
   position: sticky;
   top: 0;
   z-index: 20;
-  gap: 24px;
-  position: relative;
+  min-height: 68px;
+}
+
+.navbar-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-shrink: 0;
+  position: absolute;
+  left: 32px;
+}
+
+.navbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+}
+
+.navbar-logo {
+  height: 40px;
+  width: auto;
+  object-fit: contain;
+}
+
+.navbar-brand-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.navbar-brand-title {
+  font-size: 13px;
+  font-weight: 900;
+  color: #1f2937;
+  letter-spacing: 1px;
+  line-height: 1;
+}
+
+.navbar-brand-subtitle {
+  font-size: 11px;
+  font-weight: 600;
+  color: #6b7280;
+  letter-spacing: 0.5px;
+  line-height: 1;
 }
 
 .navbar-search {
   position: relative;
   width: 600px;
   max-width: 70vw;
+  flex-shrink: 0;
 }
 
 .navbar-search input {
   width: 100%;
   padding: 14px 52px 14px 20px;
   border-radius: 32px;
-  border: 2px solid rgba(255,255,255,0.25);
+  border: 2px solid #333;
   font-size: 16px;
-  background: linear-gradient(135deg, #ff1a1a 0%, #e00000 100%);
-  color: #fff;
+  background: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(12px) saturate(130%);
+  -webkit-backdrop-filter: blur(12px) saturate(130%);
+  color: #333;
+  caret-color: #333;
   font-weight: 600;
-  box-shadow: 0 8px 20px rgba(224,0,0,0.3);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.4);
   transition: all 0.25s ease;
 }
 
 .navbar-search input::placeholder {
-  color: rgba(255,255,255,0.85);
+  color: #333;
   font-weight: 500;
 }
 
 .navbar-search input:focus {
   outline: none;
-  border-color: rgba(255,255,255,0.45);
-  box-shadow: 0 12px 28px rgba(224,0,0,0.4), 0 0 0 3px rgba(255,255,255,0.2) inset;
+  border-color: rgba(255,255,255,0.6);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.5);
   transform: translateY(-2px);
-  background: linear-gradient(135deg, #ff2929 0%, #f00000 100%);
+  background: rgba(255, 255, 255, 0.35);
 }
 
 .navbar-search .search-icon {
@@ -52,7 +100,7 @@
   right: 18px;
   top: 50%;
   transform: translateY(-50%);
-  color: #fff;
+  color: #333;
   pointer-events: none;
   display: flex;
   align-items: center;
@@ -106,34 +154,21 @@
   display: flex;
   align-items: center;
   gap: 18px;
+  flex-shrink: 0;
   position: absolute;
   right: 32px;
 }
 
-.logout-link {
-  background: none;
-  border: none;
-  color: #e00000;
-  font-weight: 800;
-  font-size: 18px;
-  cursor: pointer;
-  text-shadow: 0 1px 2px rgba(224,0,0,0.35);
-  transition: color 0.15s ease, text-shadow 0.15s ease, opacity 0.15s ease;
+.admin-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
-.logout-link:hover {
-  color: #b00000;
-  text-decoration: underline;
-}
-
-.logout-link:active {
-  opacity: 0.85;
-}
-
-.logout-link:focus-visible {
-  outline: 2px solid #e00000;
-  outline-offset: 3px;
-  border-radius: 4px;
+.admin-label {
+  font-weight: 700;
+  font-size: 14px;
+  color: #1f2937;
 }
 
 .profile-dropdown {
@@ -141,31 +176,77 @@
 }
 
 .admin-pill {
-  background: linear-gradient(180deg, #ff1a1a 0%, #e00000 100%);
+  position: relative;
+  background: linear-gradient(135deg, #ff1f2d 0%, #c3001a 100%);
   color: #fff;
-  border-radius: 999px;
-  padding: 10px 16px;
-  font-weight: 900;
-  box-shadow: 0 4px 12px rgba(224,0,0,0.35);
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  padding: 0;
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  border: none;
+  justify-content: center;
+  border: 1.5px solid rgba(255,255,255,0.22);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: transform 0.16s ease, box-shadow 0.2s ease, border-color 0.2s ease, background 0.3s ease;
+  box-shadow: none;
+  overflow: hidden;
+}
+
+.admin-pill::before {
+  content: "";
+  position: absolute;
+  inset: -30% -10%;
+  background:
+    radial-gradient(circle at 18% 22%, rgba(255,255,255,0.22), transparent 42%),
+    radial-gradient(circle at 82% 78%, rgba(255,255,255,0.2), transparent 50%);
+  filter: blur(8px);
+  z-index: 0;
+  opacity: 0.85;
+  transition: opacity 0.25s ease, transform 0.25s ease;
 }
 
 .admin-pill:hover {
-  box-shadow: 0 6px 16px rgba(224,0,0,0.45);
-  transform: translateY(-1px);
+  transform: translateY(-1px) scale(1.02);
+  box-shadow: none;
+  border-color: rgba(255,255,255,0.3);
+}
+
+.admin-pill:hover::before {
+  opacity: 1;
+  transform: scale(1.05);
 }
 
 .admin-pill:active {
   transform: translateY(0);
+  box-shadow: none;
 }
 
-.profile-icon { display: inline-flex; line-height: 0; }
-.admin-name { display: inline-block; }
+.admin-pill > * {
+  position: relative;
+  z-index: 1;
+}
+
+.profile-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 0;
+  width: auto;
+  height: auto;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.profile-icon svg {
+  width: 26px;
+  height: 26px;
+}
+
+.admin-name {
+  display: none;
+}
 
 .profile-menu {
   position: absolute;
@@ -173,11 +254,12 @@
   right: 0;
   background: #fff;
   border-radius: 12px;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
-  min-width: 200px;
+  box-shadow: 0 10px 28px rgba(0,0,0,0.18);
+  min-width: 180px;
   overflow: hidden;
   animation: menuSlideIn 0.2s ease;
-  border: 1px solid rgba(0,0,0,0.08);
+  border: 1px solid rgba(224,0,0,0.15);
+  padding: 10px;
 }
 
 @keyframes menuSlideIn {
@@ -191,32 +273,76 @@
   }
 }
 
-.profile-menu .menu-item {
-  display: block;
-  padding: 14px 20px;
-  color: #333;
-  text-decoration: none;
-  font-weight: 600;
-  font-size: 15px;
-  transition: all 0.2s ease;
-  border-bottom: 1px solid rgba(0,0,0,0.05);
+.profile-menu.profile-menu-compact {
+  display: grid;
+  gap: 0;
+  padding: 0;
 }
 
-.profile-menu .menu-item:last-child {
-  border-bottom: none;
+.profile-menu-header {
+  display: none;
+}
+
+.profile-menu-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ff1f2d 0%, #c3001a 100%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  box-shadow: 0 6px 14px rgba(195,0,26,0.22);
+}
+
+.profile-menu .menu-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 10px 14px;
+  color: #e00000;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 14px;
+  transition: all 0.18s ease;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  border-radius: 8px;
+}
+
+.logout-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 0;
+}
+
+.profile-menu-name {
+  font-weight: 800;
+  color: #1f2933;
+  font-size: 14px;
+}
+
+.profile-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 10px 28px rgba(0,0,0,0.18);
+  min-width: 140px;
+  overflow: hidden;
+  animation: menuSlideIn 0.2s ease;
+  border: 1px solid rgba(224,0,0,0.15);
+  padding: 8px;
 }
 
 .profile-menu .menu-item:hover {
-  background: linear-gradient(90deg, #ff1a1a10, #e0000010);
-  color: #e00000;
-  padding-left: 24px;
-}
-
-.profile-menu .menu-item.active {
-  background: linear-gradient(90deg, #ff1a1a15, #e0000015);
-  color: #e00000;
-  font-weight: 700;
-  border-left: 3px solid #e00000;
+  background: rgba(224,0,0,0.12);
+  color: #b00000;
 }
 
 @media (max-width: 768px) {

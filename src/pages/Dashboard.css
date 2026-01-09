@@ -1,65 +1,11 @@
-/* Page background similar to login */
+/* Page background without decorative effects */
 .dashboard-page {
   min-height: 100vh;
   position: relative;
-  background: linear-gradient(180deg, #ffffff 0%, #f7f7f9 100%);
+  background: #f7f7f9;
   display: flex;
   flex-direction: column;
   overflow: hidden;
-}
-
-.dashboard-page::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(900px 600px at 10% -10%, rgba(227,6,19,0.18), rgba(227,6,19,0) 60%),
-    radial-gradient(800px 520px at 95% 0%, rgba(171,0,0,0.20), rgba(171,0,0,0) 58%);
-  animation: gradientShift 20s ease infinite;
-  z-index: 0;
-}
-
-@keyframes gradientShift {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.85; }
-}
-
-.dashboard-page::after {
-  content: "";
-  position: absolute;
-  width: 680px;
-  height: 680px;
-  right: -140px;
-  top: -140px;
-  background: radial-gradient(50% 50% at 50% 50%, rgba(224,0,0,0.32) 0%, rgba(224,0,0,0) 70%);
-  filter: blur(80px);
-  animation: floatBlob 12s ease-in-out infinite alternate;
-  pointer-events: none;
-  z-index: 0;
-}
-
-@keyframes floatBlob {
-  from { transform: translateY(0) rotate(0deg) scale(1); }
-  to { transform: translateY(30px) rotate(8deg) scale(1.05); }
-}
-
-/* Floating geometric shapes */
-.dashboard-page::before {
-  content: "";
-  position: absolute;
-  width: 400px;
-  height: 400px;
-  left: -100px;
-  bottom: -100px;
-  background: radial-gradient(50% 50% at 50% 50%, rgba(255,26,26,0.28) 0%, rgba(255,26,26,0) 70%);
-  border-radius: 50%;
-  filter: blur(60px);
-  animation: pulse 8s ease-in-out infinite;
-}
-
-@keyframes pulse {
-  0%, 100% { transform: scale(1); opacity: 0.6; }
-  50% { transform: scale(1.15); opacity: 0.8; }
 }
 
 .dashboard-main {
@@ -83,13 +29,6 @@
   font-size: 52px;
   font-weight: 800;
   letter-spacing: 0.5px;
-  text-shadow: 0 0 20px rgba(255, 255, 255, 0.8), 0 0 40px rgba(255, 255, 255, 0.5);
-  animation: titleGlow 3s ease-in-out infinite alternate;
-}
-
-@keyframes titleGlow {
-  from { text-shadow: 0 0 20px rgba(255, 255, 255, 0.8), 0 0 40px rgba(255, 255, 255, 0.5); }
-  to { text-shadow: 0 0 30px rgba(255, 255, 255, 0.9), 0 0 60px rgba(255, 255, 255, 0.6); }
 }
 
 .dashboard-subtitle {
@@ -118,22 +57,11 @@
   flex-direction: column;
   align-items: flex-start;
   transition: transform .16s ease, box-shadow .16s ease;
-  animation: cardFadeIn 0.5s ease-out backwards;
 }
-
-@keyframes cardFadeIn {
-  from { opacity: 0; transform: translateY(20px) scale(0.95); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
-}
-
-.stat-card:nth-child(1) { animation-delay: 0.05s; }
-.stat-card:nth-child(2) { animation-delay: 0.1s; }
-.stat-card:nth-child(3) { animation-delay: 0.15s; }
-.stat-card:nth-child(4) { animation-delay: 0.2s; }
 
 .stat-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 14px 34px rgba(0,0,0,0.36);
+  transform: none;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
 }
 
 .stat-badge {
@@ -164,65 +92,3 @@
   }
 }
 
-/* Moving Silhouettes */
-.dashboard-main::before {
-  content: "";
-  position: absolute;
-  width: 350px;
-  height: 350px;
-  right: 8%;
-  top: 15%;
-  background: radial-gradient(ellipse at 50% 50%, rgba(255,26,26,0.08) 0%, transparent 60%);
-  border-radius: 47% 53% 41% 59% / 56% 42% 58% 44%;
-  animation: silhouetteDrift1 22s ease-in-out infinite;
-  opacity: 0.5;
-  z-index: 0;
-}
-
-@keyframes silhouetteDrift1 {
-  0%, 100% { 
-    transform: translate(0, 0) rotate(0deg);
-    border-radius: 47% 53% 41% 59% / 56% 42% 58% 44%;
-  }
-  25% { 
-    transform: translate(-50px, 40px) rotate(90deg);
-    border-radius: 53% 47% 59% 41% / 42% 56% 44% 58%;
-  }
-  50% { 
-    transform: translate(40px, -30px) rotate(180deg);
-    border-radius: 41% 59% 47% 53% / 58% 44% 56% 42%;
-  }
-  75% { 
-    transform: translate(-30px, -40px) rotate(270deg);
-    border-radius: 59% 41% 53% 47% / 44% 58% 42% 56%;
-  }
-}
-
-.dashboard-main::after {
-  content: "";
-  position: absolute;
-  width: 280px;
-  height: 280px;
-  left: 10%;
-  bottom: 20%;
-  background: radial-gradient(circle at 40% 60%, rgba(227,6,19,0.06) 0%, transparent 50%);
-  border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
-  animation: silhouetteDrift2 18s ease-in-out infinite reverse;
-  opacity: 0.4;
-  z-index: 0;
-}
-
-@keyframes silhouetteDrift2 {
-  0%, 100% { 
-    transform: translate(0, 0) scale(1);
-    border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
-  }
-  33% { 
-    transform: translate(60px, -40px) scale(1.15);
-    border-radius: 40% 60% 70% 30% / 30% 60% 40% 70%;
-  }
-  66% { 
-    transform: translate(-40px, 50px) scale(0.9);
-    border-radius: 30% 70% 60% 40% / 70% 40% 30% 60%;
-  }
-}

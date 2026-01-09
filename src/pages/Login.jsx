@@ -18,6 +18,9 @@ function Login({ setAuth }) {
           <TelkomLogo size="small" />
           <span className="login-header-text">PT. Telkom Witel Jakarta Centrum</span>
         </div>
+        <p className="login-header-address">
+          Jl. Yos Sudarso No.23-24, RT.16/RW.6 14320 Tanjung Priok Daerah Khusus Ibukota Jakarta
+        </p>
       </header>
 
       {/* Main layout */}
@@ -25,15 +28,18 @@ function Login({ setAuth }) {
         {/* Left hero text */}
         <div className="login-hero">
           <h1 className="login-hero-title">
-            LAYANAN<br />
-            PENGADUAN ASET
+            LAPORAN<br />
+            PENGADUAN
           </h1>
+          <p className="login-hero-subtitle">
+            Selamat datang di sistem laporan pengaduan PT. Telkom Witel Jakarta Centrum. Silakan masuk untuk melanjutkan.
+          </p>
         </div>
 
-        {/* Right red card */}
+        {/* Right side: login card */}
         <div className="login-panel">
           <div className="login-card">
-            <h2 className="login-card-title">LOGIN</h2>
+            <h2 className="login-card-title">Login</h2>
             <form
               className="login-form"
               onSubmit={async (e) => {
@@ -51,6 +57,7 @@ function Login({ setAuth }) {
                     throw new Error(data?.error || 'Login gagal');
                   }
                   localStorage.setItem('token', data.token);
+                  localStorage.setItem('userName', username);
                   if (setAuth) setAuth(true);
                   navigate('/laporan-aset');
                 } catch (err) {
@@ -67,6 +74,7 @@ function Login({ setAuth }) {
                 className="login-input"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
+                placeholder="Masukkan username"
               />
 
               <label className="login-label" htmlFor="password">Password:</label>
@@ -76,12 +84,10 @@ function Login({ setAuth }) {
                 className="login-input"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                placeholder="Masukkan password"
               />
 
               {error && <p className="login-error">{error}</p>}
-              <p className="login-register">
-                Belum ada akun? registrasi <a href="#" className="login-register-link">disini</a>
-              </p>
               <button type="submit" className="login-submit" disabled={loading}>
                 {loading ? 'Memproses…' : 'Masuk'}
               </button>
@@ -89,6 +95,10 @@ function Login({ setAuth }) {
           </div>
         </div>
       </div>
+
+      <footer className="login-footer">
+        <span>Copyright © 2025 by Intern Informatics Diponegoro University</span>
+      </footer>
     </div>
   );
 }
