@@ -732,9 +732,39 @@
 }
 
 /* Responsive Design */
+@media (max-width: 1200px) {
+  .detail-main {
+    padding: 24px 20px;
+  }
+  
+  .detail-title {
+    font-size: 28px;
+  }
+  
+  .detail-content {
+    grid-template-columns: 1fr 350px;
+    gap: 24px;
+    padding: 28px;
+  }
+}
+
 @media (max-width: 1024px) {
   .detail-wrapper {
     grid-template-columns: 1fr 280px;
+  }
+  
+  .detail-content {
+    grid-template-columns: 1fr;
+    gap: 20px;
+    padding: 24px;
+  }
+  
+  .detail-header {
+    padding: 20px 24px;
+  }
+  
+  .detail-id {
+    font-size: 20px;
   }
   
   .similar-reports {
@@ -747,9 +777,54 @@
     grid-template-columns: 1fr;
   }
   
+  .detail-main {
+    padding: 20px 16px;
+  }
+  
   .detail-title {
     font-size: 24px;
     margin-bottom: 16px;
+  }
+  
+  .detail-header {
+    padding: 16px 20px;
+    flex-direction: column;
+    gap: 12px;
+    text-align: center;
+  }
+  
+  .detail-id {
+    font-size: 18px;
+  }
+  
+  .detail-content {
+    padding: 20px;
+  }
+  
+  .info-label {
+    font-size: 12px;
+  }
+  
+  .info-value {
+    font-size: 13px;
+  }
+  
+  .image-wrapper {
+    height: auto;
+  }
+  
+  .slider-arrow {
+    width: 36px;
+    height: 36px;
+    font-size: 20px;
+  }
+  
+  .slider-dots {
+    gap: 6px;
+  }
+  
+  .slider-dot {
+    width: 18px;
   }
   
   .similar-reports {
@@ -759,5 +834,70 @@
   
   .similar-reports-list {
     max-height: 440px;
+  }
+}
+
+@media (max-width: 480px) {
+  .detail-main {
+    padding: 16px 12px;
+  }
+  
+  .detail-title {
+    font-size: 20px;
+    margin-bottom: 12px;
+  }
+  
+  .detail-header {
+    padding: 14px 16px;
+  }
+  
+  .detail-id {
+    font-size: 16px;
+  }
+  
+  .detail-status {
+    font-size: 12px;
+    padding: 6px 14px;
+  }
+  
+  .detail-content {
+    padding: 16px;
+    gap: 16px;
+  }
+  
+  .info-section {
+    gap: 12px;
+  }
+  
+  .info-label {
+    font-size: 11px;
+  }
+  
+  .info-value {
+    font-size: 12px;
+  }
+  
+  .image-wrapper {
+    height: auto;
+    min-height: 200px;
+  }
+  
+  .slider-arrow {
+    width: 32px;
+    height: 32px;
+    font-size: 18px;
+  }
+  
+  .similar-reports-title {
+    font-size: 14px;
+    padding: 12px 10px;
+  }
+  
+  .similar-card {
+    padding: 12px;
+  }
+  
+  .similar-info-row {
+    font-size: 11px;
   }
 }

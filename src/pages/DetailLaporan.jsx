@@ -45,7 +45,24 @@ function DetailLaporan() {
   useEffect(() => {
     (async () => {
       try {
-        const res = await fetch(`/api/reports/${id}`);
+        const token = localStorage.getItem('token');
+        const res = await fetch(`/api/reports/${id}`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        
+        if (res.status === 401) {
+          const data = await res.json();
+          if (data.reason === 'password_changed') {
+            alert('Password Anda telah diganti. Silakan login kembali.');
+          }
+          localStorage.removeItem('token');
+          localStorage.removeItem('userName');
+          window.location.href = '/login';
+          return;
+        }
+        
         const data = await res.json();
         setReport(data);
       } catch (e) {
@@ -58,7 +75,24 @@ function DetailLaporan() {
   useEffect(() => {
     (async () => {
       try {
-        const res = await fetch('/api/reports');
+        const token = localStorage.getItem('token');
+        const res = await fetch('/api/reports', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        
+        if (res.status === 401) {
+          const data = await res.json();
+          if (data.reason === 'password_changed') {
+            alert('Password Anda telah diganti. Silakan login kembali.');
+          }
+          localStorage.removeItem('token');
+          localStorage.removeItem('userName');
+          window.location.href = '/login';
+          return;
+        }
+        
         const data = await res.json();
         if (Array.isArray(data)) {
           setAllReports(data);
@@ -87,10 +121,11 @@ function DetailLaporan() {
   const handleStatusCycle = () => {
     if (!report) return;
     const currentMapped = statusMap[report.status];
+    // Hanya kirim nilai yang diizinkan backend: 'To-Do', 'In Progress', 'Done'
     const statusFlow = {
-      'To-Do': { next: 'Processed', db: 'Dalam Proses', msg: 'Mulai proses pengerjaan?' },
-      'Processed': { next: 'Done', db: 'Selesai', msg: 'Tandai laporan sebagai selesai?' },
-      'Done': { next: 'To-Do', db: 'Pending', msg: 'Reset status ke To-Do?' }
+      'To-Do': { next: 'Processed', db: 'In Progress', msg: 'Mulai proses pengerjaan?' },
+      'Processed': { next: 'Done', db: 'Done', msg: 'Tandai laporan sebagai selesai?' },
+      'Done': { next: 'To-Do', db: 'To-Do', msg: 'Reset status ke To-Do?' }
     };
     const flow = statusFlow[currentMapped];
     
@@ -100,12 +135,44 @@ function DetailLaporan() {
       message: flow.msg,
       action: async () => {
         try {
+          const token = localStorage.getItem('token');
+          if (!token) {
+            alert('Sesi berakhir, silakan login ulang.');
+            window.location.href = '/login';
+            return;
+          }
           const res = await fetch(`/api/reports/${id}/status`, {
             method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`
+            },
             body: JSON.stringify({ status: flow.db })
           });
-          if (res.ok) setReport({ ...report, status: flow.db });
+          
+          if (res.status === 401) {
+            const data = await res.json();
+            if (data.reason === 'password_changed') {
+              alert('Password Anda telah diganti. Silakan login kembali.');
+            }
+            localStorage.removeItem('token');
+            localStorage.removeItem('userName');
+            window.location.href = '/login';
+            return;
+          }
+          
+          if (!res.ok) {
+            let errText = await res.text();
+            try {
+              const maybeJson = JSON.parse(errText);
+              errText = maybeJson.error || errText;
+            } catch (_) {}
+            console.error('Gagal update status:', res.status, errText);
+            alert(`Gagal mengubah status (${res.status}): ${errText}`);
+            return;
+          }
+
+          setReport({ ...report, status: flow.db });
         } catch (e) {
           console.error(e);
         }
@@ -150,8 +217,42 @@ function DetailLaporan() {
       message: 'Yakin ingin menghapus laporan ini? Data tidak dapat dikembalikan.',
       action: async () => {
         try {
-          const res = await fetch(`/api/reports/${id}`, { method: 'DELETE' });
-          if (res.ok) navigate('/laporan-aset');
+          const token = localStorage.getItem('token');
+          if (!token) {
+            alert('Sesi berakhir, silakan login ulang.');
+            window.location.href = '/login';
+            return;
+          }
+          const res = await fetch(`/api/reports/${id}`, { 
+            method: 'DELETE',
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
+          });
+          
+          if (res.status === 401) {
+            const data = await res.json();
+            if (data.reason === 'password_changed') {
+              alert('Password Anda telah diganti. Silakan login kembali.');
+            }
+            localStorage.removeItem('token');
+            localStorage.removeItem('userName');
+            window.location.href = '/login';
+            return;
+          }
+          
+          if (!res.ok) {
+            let errText = await res.text();
+            try {
+              const maybeJson = JSON.parse(errText);
+              errText = maybeJson.error || errText;
+            } catch (_) {}
+            console.error('Gagal menghapus:', res.status, errText);
+            alert(`Gagal menghapus laporan (${res.status}): ${errText}`);
+            return;
+          }
+
+          navigate('/laporan-aset');
         } catch (e) {
           console.error(e);
         }

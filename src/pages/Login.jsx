@@ -11,17 +11,6 @@ function Login({ setAuth }) {
   const navigate = useNavigate();
 
 
-  const fillAdmin = () => {
-  setUsername('admin');
-  setPassword('admin123');
-};
-
-const fillTeknisi = () => {
-  setUsername('teknisi');
-  setPassword('teknisi123');
-};
-
-
   return (
     <div className="login-page">
       {/* Top header with logo + title */}

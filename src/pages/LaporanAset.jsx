@@ -28,8 +28,26 @@ function useReports(searchTerm) {
     (async () => {
       setLoading(true);
       try {
+        const token = localStorage.getItem('token');
         const url = searchTerm ? `/api/reports?search=${encodeURIComponent(searchTerm)}` : '/api/reports';
-        const res = await fetch(url);
+        const res = await fetch(url, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        
+        if (res.status === 401) {
+          const data = await res.json();
+          // Auto logout jika password diganti
+          if (data.reason === 'password_changed') {
+            alert('Password Anda telah diganti. Silakan login kembali.');
+          }
+          localStorage.removeItem('token');
+          localStorage.removeItem('userName');
+          window.location.href = '/login';
+          return;
+        }
+        
         const data = await res.json();
         if (Array.isArray(data)) setItems(data);
         else setError('Format data tidak valid');
