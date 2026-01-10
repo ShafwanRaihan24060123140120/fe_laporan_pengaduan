@@ -58,7 +58,6 @@ router.post('/login',
 
       return res.status(401).json({ error: 'Invalid credentials' });
     } catch (err) {
-      console.error('Login error:', err);
       return res.status(500).json({ error: 'Authentication failed' });
     }
   }

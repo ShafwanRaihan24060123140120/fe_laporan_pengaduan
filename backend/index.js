@@ -78,7 +78,6 @@ app.use('/api/admin', adminRouter); // /admin/users, /admin/dashboard
 
 // Global error handler
 app.use((err, req, res, next) => {
-  console.error('Unhandled error:', err);
   res.status(500).json({ 
     error: NODE_ENV === 'production' ? 'Internal server error' : err.message 
   });
@@ -89,6 +88,5 @@ init().then(() => {
     console.log(`Server listening on http://localhost:${PORT}`);
   });
 }).catch(err => {
-  console.error('Failed to init DB', err);
   process.exit(1);
 });

@@ -34,7 +34,6 @@ router.get('/reports', authenticateToken, async (req, res) => {
 
     res.json(rows);
   } catch (e) {
-    console.error('List reports error:', e.message);
     res.status(500).json({ error: 'Failed to list reports' });
   }
 });
@@ -46,7 +45,6 @@ router.get('/reports/:id', authenticateToken, async (req, res) => {
     if (!row) return res.status(404).json({ error: 'Report not found' });
     res.json(row);
   } catch (e) {
-    console.error('Get report error:', e.message);
     res.status(500).json({ error: 'Failed to get report' });
   }
 });
@@ -57,7 +55,6 @@ router.delete('/reports/:id', authenticateToken, requireAdminOrTeknisi, async (r
     await deleteReport(req.params.id);
     res.json({ ok: true, message: 'Report deleted successfully' });
   } catch (e) {
-    console.error('Delete report error:', e.message);
     res.status(500).json({ error: 'Failed to delete report' });
   }
 });
@@ -80,7 +77,6 @@ router.put('/reports/:id/status',
       await updateReportStatus(req.params.id, status);
       res.json({ ok: true, message: 'Status updated successfully' });
     } catch (e) {
-      console.error('Update status error:', e.message);
       res.status(500).json({ error: 'Failed to update status' });
     }
   }

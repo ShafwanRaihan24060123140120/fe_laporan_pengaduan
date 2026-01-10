@@ -66,7 +66,7 @@ function DetailLaporan() {
         const data = await res.json();
         setReport(data);
       } catch (e) {
-        console.error(e);
+        // Error handled by alerts above
       }
     })();
   }, [id]);
@@ -100,7 +100,7 @@ function DetailLaporan() {
           setAllIds(ids);
         }
       } catch (e) {
-        console.error(e);
+        // Navigation error handled silently
       }
     })();
   }, []);
@@ -167,14 +167,13 @@ function DetailLaporan() {
               const maybeJson = JSON.parse(errText);
               errText = maybeJson.error || errText;
             } catch (_) {}
-            console.error('Gagal update status:', res.status, errText);
             alert(`Gagal mengubah status (${res.status}): ${errText}`);
             return;
           }
 
           setReport({ ...report, status: flow.db });
         } catch (e) {
-          console.error(e);
+          alert('Terjadi kesalahan saat mengubah status.');
         }
         setModal({ isOpen: false, title: '', message: '', action: null });
       }
@@ -247,14 +246,13 @@ function DetailLaporan() {
               const maybeJson = JSON.parse(errText);
               errText = maybeJson.error || errText;
             } catch (_) {}
-            console.error('Gagal menghapus:', res.status, errText);
             alert(`Gagal menghapus laporan (${res.status}): ${errText}`);
             return;
           }
 
           navigate('/laporan-aset');
         } catch (e) {
-          console.error(e);
+          alert('Terjadi kesalahan saat menghapus laporan.');
         }
         setModal({ isOpen: false, title: '', message: '', action: null });
       }

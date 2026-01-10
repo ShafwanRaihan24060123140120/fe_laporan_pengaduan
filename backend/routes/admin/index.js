@@ -23,7 +23,6 @@ router.get('/dashboard/summary', authenticateToken, requireAdmin, async (req, re
       verifikasiPending: 0
     });
   } catch (e) {
-    console.error('Dashboard summary error:', e.message);
     res.status(500).json({ error: 'Failed to get dashboard summary' });
   }
 });
@@ -34,7 +33,6 @@ router.get('/users', authenticateToken, requireAdmin, async (req, res) => {
     const rows = await listUsers();
     res.json(rows);
   } catch (e) {
-    console.error('List users error:', e.message);
     res.status(500).json({ error: 'Failed to list users' });
   }
 });
@@ -56,7 +54,6 @@ router.post('/users',
       await createUser(nama);
       res.json({ ok: true, message: 'User created successfully' });
     } catch (e) {
-      console.error('Create user error:', e.message);
       res.status(500).json({ error: 'Failed to create user' });
     }
   }
@@ -67,7 +64,6 @@ router.delete('/users/:id', authenticateToken, requireAdmin, async (req, res) =>
     await deleteUser(req.params.id);
     res.json({ ok: true, message: 'User deleted successfully' });
   } catch (e) {
-    console.error('Delete user error:', e.message);
     res.status(500).json({ error: 'Failed to delete user' });
   }
 });

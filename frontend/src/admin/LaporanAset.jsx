@@ -52,7 +52,6 @@ function useReports(searchTerm) {
         if (Array.isArray(data)) setItems(data);
         else setError('Format data tidak valid');
       } catch (e) {
-        console.error(e);
         setError('Gagal memuat data dari server');
       }
       setLoading(false);
