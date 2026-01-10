@@ -1,7 +1,7 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import Navbar from '../components/Navbar';
-import ConfirmModal from '../components/ConfirmModal';
+import Navbar from '../shared/components/Navbar';
+import ConfirmModal from '../shared/components/ConfirmModal';
 import './Verifikasi.css';
 
 function Verifikasi() {

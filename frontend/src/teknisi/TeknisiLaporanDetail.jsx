@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import Navbar from '../components/Navbar';
-import ConfirmModal from '../components/ConfirmModal';
+import Navbar from '../shared/components/Navbar';
+import ConfirmModal from '../shared/components/ConfirmModal';
 import './Verifikasi.css'; 
 
 export default function TeknisiLaporanDetail() {

@@ -1,10 +1,10 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import Login from './pages/Login';
-import LaporanAset from './pages/LaporanAset';
-import DetailLaporan from './pages/DetailLaporan';
+import Login from './shared/Login';
+import LaporanAset from './admin/LaporanAset';
+import DetailLaporan from './admin/DetailLaporan';
 import './App.css';
-import Footer from './components/Footer';
+import Footer from './shared/components/Footer';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);

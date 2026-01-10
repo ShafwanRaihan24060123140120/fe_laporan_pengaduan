@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Login.css';
-import TelkomLogo from '../components/TelkomLogo';
+import TelkomLogo from './components/TelkomLogo';
 
 function Login({ setAuth }) {
   const [username, setUsername] = useState('');

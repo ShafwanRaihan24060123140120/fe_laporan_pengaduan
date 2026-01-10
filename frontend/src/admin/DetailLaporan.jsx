@@ -1,8 +1,8 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import Navbar from '../components/Navbar';
+import Navbar from '../shared/components/Navbar';
 import './DetailLaporan.css';
 import { useEffect, useState } from 'react';
-import ConfirmModal from '../components/ConfirmModal';
+import ConfirmModal from '../shared/components/ConfirmModal';
 
 const statusMap = {
   'Pending': 'To-Do',
