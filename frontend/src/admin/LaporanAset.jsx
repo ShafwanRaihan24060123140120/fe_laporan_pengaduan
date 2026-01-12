@@ -1,8 +1,16 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Navbar from '../shared/components/Navbar';
 import './LaporanAset.css';
 
 import { useEffect, useState } from 'react';
+import { useEffect as useEffectTitle } from 'react';
+
+function useSetAdminListTitle() {
+  useEffectTitle(() => {
+    document.title = 'Daftar Laporan Aset | Admin';
+    return () => { document.title = 'Aplikasi Pengaduan Aset'; };
+  }, []);
+}
 
 const statusMap = {
   'Pending': 'To-Do',
@@ -29,6 +37,11 @@ function useReports(searchTerm) {
       setLoading(true);
       try {
         const token = localStorage.getItem('token');
+        if (!token) {
+          setError('Sesi berakhir, silakan login kembali');
+          window.location.href = '/login';
+          return;
+        }
         const url = searchTerm ? `/api/reports?search=${encodeURIComponent(searchTerm)}` : '/api/reports';
         const res = await fetch(url, {
           headers: {
@@ -37,17 +50,24 @@ function useReports(searchTerm) {
         });
         
         if (res.status === 401) {
-          const data = await res.json();
-          // Auto logout jika password diganti
-          if (data.reason === 'password_changed') {
-            alert('Password Anda telah diganti. Silakan login kembali.');
-          }
-          localStorage.removeItem('token');
-          localStorage.removeItem('userName');
+          const data = await res.json().catch(() => ({}));
+          if (data.reason === 'password_changed') alert('Password Anda telah diganti. Silakan login kembali.');
+          localStorage.clear();
           window.location.href = '/login';
           return;
         }
-        
+
+        if (res.status === 429) {
+          setError('Terlalu banyak permintaan. Coba lagi sebentar lagi.');
+          return;
+        }
+
+        if (!res.ok) {
+          const txt = await res.text();
+          setError(`Gagal memuat data (${res.status}). ${txt || ''}`.trim());
+          return;
+        }
+
         const data = await res.json();
         if (Array.isArray(data)) setItems(data);
         else setError('Format data tidak valid');
@@ -62,8 +82,13 @@ function useReports(searchTerm) {
 
 function LaporanAset() {
   const [searchTerm, setSearchTerm] = useState('');
+  useSetAdminListTitle();
   const { items, loading, error } = useReports(searchTerm);
-  
+  const navigate = useNavigate();
+
+  // Tidak perlu blokir back browser di sini. Biarkan user bisa kembali ke halaman lain (misal login, dashboard, dsb),
+  // tapi pastikan navigasi ke detail sudah SPA (navigate) agar tidak ada entry history baru ke detail.
+
   return (
     <div className="laporan-page">
       <Navbar searchTerm={searchTerm} onSearchChange={setSearchTerm} />
@@ -92,7 +117,7 @@ function LaporanAset() {
               </thead>
               <tbody>
                 {items.map((item, index) => (
-                  <tr key={item.id} onClick={() => window.location.href = `/laporan/${item.id}`} style={{cursor: 'pointer'}}>
+                  <tr key={item.id} onClick={() => navigate(`/laporan/${item.id}`)} style={{cursor: 'pointer'}}>
                     <td>
                       <span className="table-code">{item.id}</span>
                     </td>

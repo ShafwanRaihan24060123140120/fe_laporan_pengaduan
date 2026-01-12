@@ -34,6 +34,9 @@ router.post('/login',
         const match = await bcrypt.compare(password, admin.password_hash);
         if (!match) return res.status(401).json({ error: 'Invalid credentials' });
 
+        // Set session
+        req.session.user = { username, role: 'admin' };
+
         const token = jwt.sign(
           { sub: username, role: 'admin' },
           JWT_SECRET,
@@ -47,6 +50,9 @@ router.post('/login',
       if (teknisi) {
         const match = await bcrypt.compare(password, teknisi.password_hash);
         if (!match) return res.status(401).json({ error: 'Invalid credentials' });
+
+        // Set session
+        req.session.user = { username, role: 'teknisi' };
 
         const token = jwt.sign(
           { sub: username, role: 'teknisi' },

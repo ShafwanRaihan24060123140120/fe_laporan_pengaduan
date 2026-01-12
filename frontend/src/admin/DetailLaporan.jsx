@@ -28,15 +28,36 @@ const getNextStatusClass = (status) => {
 };
 
 function DetailLaporan() {
+    // Intercept tombol back browser agar langsung ke daftar laporan
+    useEffect(() => {
+      const handlePopState = (e) => {
+        e.preventDefault();
+        window.location.replace('/laporan-aset');
+      };
+      window.addEventListener('popstate', handlePopState);
+      return () => {
+        window.removeEventListener('popstate', handlePopState);
+      };
+    }, []);
   const { id } = useParams();
   const navigate = useNavigate();
   const [report, setReport] = useState(null);
+  // Set judul tab browser
+  useEffect(() => {
+    if (report && report.nama_barang) {
+      document.title = `Detail Laporan: ${report.nama_barang} (${id}) | Admin`;
+    } else {
+      document.title = 'Detail Laporan | Admin';
+    }
+    return () => { document.title = 'Aplikasi Pengaduan Aset'; };
+  }, [report, id]);
   const [modal, setModal] = useState({ isOpen: false, title: '', message: '', action: null });
   const [imageModal, setImageModal] = useState(false);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [allIds, setAllIds] = useState([]);
   const [allReports, setAllReports] = useState([]);
   const [similarReports, setSimilarReports] = useState([]);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     setActiveImageIndex(0);
@@ -46,6 +67,11 @@ function DetailLaporan() {
     (async () => {
       try {
         const token = localStorage.getItem('token');
+        if (!token) {
+          setError('Sesi berakhir, silakan login kembali');
+          window.location.href = '/login';
+          return;
+        }
         const res = await fetch(`/api/reports/${id}`, {
           headers: {
             'Authorization': `Bearer ${token}`
@@ -53,16 +79,24 @@ function DetailLaporan() {
         });
         
         if (res.status === 401) {
-          const data = await res.json();
-          if (data.reason === 'password_changed') {
-            alert('Password Anda telah diganti. Silakan login kembali.');
-          }
-          localStorage.removeItem('token');
-          localStorage.removeItem('userName');
+          const data = await res.json().catch(() => ({}));
+          if (data.reason === 'password_changed') alert('Password Anda telah diganti. Silakan login kembali.');
+          localStorage.clear();
           window.location.href = '/login';
           return;
         }
         
+        if (res.status === 429) {
+          setError('Terlalu banyak permintaan. Coba lagi sebentar lagi.');
+          return;
+        }
+
+        if (!res.ok) {
+          const txt = await res.text();
+          setError(`Gagal memuat laporan (${res.status}). ${txt || ''}`.trim());
+          return;
+        }
+
         const data = await res.json();
         setReport(data);
       } catch (e) {
@@ -76,6 +110,11 @@ function DetailLaporan() {
     (async () => {
       try {
         const token = localStorage.getItem('token');
+        if (!token) {
+          setError('Sesi berakhir, silakan login kembali');
+          window.location.href = '/login';
+          return;
+        }
         const res = await fetch('/api/reports', {
           headers: {
             'Authorization': `Bearer ${token}`
@@ -83,16 +122,24 @@ function DetailLaporan() {
         });
         
         if (res.status === 401) {
-          const data = await res.json();
-          if (data.reason === 'password_changed') {
-            alert('Password Anda telah diganti. Silakan login kembali.');
-          }
-          localStorage.removeItem('token');
-          localStorage.removeItem('userName');
+          const data = await res.json().catch(() => ({}));
+          if (data.reason === 'password_changed') alert('Password Anda telah diganti. Silakan login kembali.');
+          localStorage.clear();
           window.location.href = '/login';
           return;
         }
         
+        if (res.status === 429) {
+          setError('Terlalu banyak permintaan. Coba lagi sebentar lagi.');
+          return;
+        }
+
+        if (!res.ok) {
+          const txt = await res.text();
+          setError(`Gagal memuat daftar laporan (${res.status}). ${txt || ''}`.trim());
+          return;
+        }
+
         const data = await res.json();
         if (Array.isArray(data)) {
           setAllReports(data);
@@ -103,7 +150,7 @@ function DetailLaporan() {
         // Navigation error handled silently
       }
     })();
-  }, []);
+  }, [id]);
 
   // Filter similar reports by unit
   useEffect(() => {
@@ -172,6 +219,17 @@ function DetailLaporan() {
           }
 
           setReport({ ...report, status: flow.db });
+
+          // Refresh allReports dan similarReports agar status laporan serupa ikut update
+          const reportsRes = await fetch('/api/reports', {
+            headers: { 'Authorization': `Bearer ${token}` }
+          });
+          if (reportsRes.ok) {
+            const data = await reportsRes.json();
+            if (Array.isArray(data)) {
+              setAllReports(data);
+            }
+          }
         } catch (e) {
           alert('Terjadi kesalahan saat mengubah status.');
         }
@@ -230,16 +288,18 @@ function DetailLaporan() {
           });
           
           if (res.status === 401) {
-            const data = await res.json();
-            if (data.reason === 'password_changed') {
-              alert('Password Anda telah diganti. Silakan login kembali.');
-            }
-            localStorage.removeItem('token');
-            localStorage.removeItem('userName');
+            const data = await res.json().catch(() => ({}));
+            if (data.reason === 'password_changed') alert('Password Anda telah diganti. Silakan login kembali.');
+            localStorage.clear();
             window.location.href = '/login';
             return;
           }
           
+          if (res.status === 429) {
+            alert('Terlalu banyak permintaan. Coba lagi sebentar lagi.');
+            return;
+          }
+
           if (!res.ok) {
             let errText = await res.text();
             try {
@@ -262,6 +322,9 @@ function DetailLaporan() {
   return (
     <div className="detail-page">
       <Navbar />
+      {error && (
+        <div style={{ textAlign: 'center', color: '#b00000', padding: '16px' }}>{error}</div>
+      )}
       <div className="detail-main">
         <h1 className="detail-title">Detail Laporan</h1>
         <div className="detail-wrapper">
@@ -345,11 +408,20 @@ function DetailLaporan() {
             </div>
 
             <div className="detail-actions">
-              <button className="btn-back" onClick={() => navigate('/laporan-aset')}>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
-                </svg>
-                Kembali
+              <button
+                className="btn-next"
+                type="button"
+                onClick={() => {
+                  if (!allIds || allIds.length === 0) return;
+                  const idx = allIds.findIndex(rid => rid === id);
+                  if (idx !== -1) {
+                    const nextIdx = (idx < allIds.length - 1) ? idx + 1 : 0;
+                    navigate(`/laporan/${allIds[nextIdx]}`);
+                  }
+                }}
+                disabled={!allIds || allIds.length === 0}
+              >
+                Berikutnya →
               </button>
               <div className="action-buttons">
                 <button 

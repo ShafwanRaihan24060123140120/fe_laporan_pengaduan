@@ -1,15 +1,31 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Login.css';
 import TelkomLogo from './components/TelkomLogo';
 
-function Login({ setAuth }) {
+function Login({ setAuth, setRole }) {
+    useEffect(() => {
+      document.title = 'Login | Sistem Laporan Pengaduan';
+      return () => { document.title = 'Sistem Laporan Pengaduan'; };
+    }, []);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
+  // Redirect jika sudah login
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      const role = localStorage.getItem('role');
+      if (role === 'teknisi') {
+        navigate('/teknisi/laporan-aset', { replace: true });
+      } else {
+        navigate('/laporan-aset', { replace: true });
+      }
+    }
+  }, [navigate]);
 
   return (
     <div className="login-page">
@@ -59,8 +75,13 @@ function Login({ setAuth }) {
                   }
                   localStorage.setItem('token', data.token);
                   localStorage.setItem('userName', username);
+                  if (data.user?.role) localStorage.setItem('role', data.user.role);
                   if (setAuth) setAuth(true);
-                  navigate('/laporan-aset');
+                  if (setRole) setRole(data.user?.role);
+                  // Redirect berdasarkan role
+                  const role = data.user?.role;
+                  if (role === 'teknisi') navigate('/teknisi/laporan-aset');
+                  else navigate('/laporan-aset');
                 } catch (err) {
                   setError(err.message);
                 } finally {

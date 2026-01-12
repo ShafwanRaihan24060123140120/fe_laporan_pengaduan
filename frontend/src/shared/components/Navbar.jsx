@@ -32,11 +32,16 @@ function Navbar({ searchTerm, onSearchChange }) {
 
   
   const confirmLogout = () => {
+    // Hapus semua data dari localStorage
     localStorage.removeItem('token');
-    navigate('/login');
+    localStorage.removeItem('userName');
+    localStorage.removeItem('role');
+    
+    // Hard redirect ke login dengan reload
+    window.location.href = '/login';
   };
 
-  const showSearch = location.pathname.startsWith('/laporan-aset');
+  const showSearch = location.pathname.startsWith('/laporan-aset') || location.pathname.startsWith('/teknisi/laporan-aset');
 
   useEffect(() => {
     const handleClickOutside = (event) => {

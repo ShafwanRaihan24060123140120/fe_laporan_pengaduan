@@ -53,6 +53,25 @@ async function init() {
     status TEXT DEFAULT 'Pending'
   )`);
 
+  // Ensure additional image columns exist
+  try {
+    const info = await new Promise((resolve, reject) => {
+      db.all("PRAGMA table_info('reports')", (err, rows) => {
+        if (err) return reject(err);
+        resolve(rows);
+      });
+    });
+    const cols = info.map(r => r.name);
+    if (!cols.includes('image_url2')) {
+      await run(db, 'ALTER TABLE reports ADD COLUMN image_url2 TEXT');
+    }
+    if (!cols.includes('image_url3')) {
+      await run(db, 'ALTER TABLE reports ADD COLUMN image_url3 TEXT');
+    }
+  } catch (_) {
+    // ignore migration errors if columns already exist
+  }
+
   await run(db, `CREATE TABLE IF NOT EXISTS users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     nama TEXT NOT NULL,
@@ -75,7 +94,7 @@ async function init() {
 
   const existingTeknisi = await get(db, 'SELECT COUNT(1) as c FROM teknisi');
    if (!existingTeknisi || existingTeknisi.c === 0) {
-    const passwordHash = bcrypt.hashSync('TelkomTeknisi2026!', 12);
+    const passwordHash = bcrypt.hashSync('TeknisiBaru2026!', 12);
     await run(db, 'INSERT INTO teknisi (username, password_hash) VALUES (?, ?)', ['teknisi', passwordHash]);
 }
 
@@ -171,6 +190,11 @@ module.exports = {
   updateReportStatus: (id, status) => {
     const db = openDb();
     return run(db, 'UPDATE reports SET status = ? WHERE id = ?', [status, id]);
+  },
+  updateReportImages: (id, urls) => {
+    const db = openDb();
+    const [u1 = null, u2 = null, u3 = null] = urls || [];
+    return run(db, 'UPDATE reports SET image_url = ?, image_url2 = ?, image_url3 = ? WHERE id = ?', [u1, u2, u3, id]);
   },
   // helpers for users management
   listUsers: () => {

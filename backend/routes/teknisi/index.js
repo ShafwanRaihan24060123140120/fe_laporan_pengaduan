@@ -1,12 +1,28 @@
 const express = require('express');
 const { body, validationResult } = require('express-validator');
-const { authenticateToken, requireAdmin } = require('../../middleware/auth');
-const { listReports, getReportById, deleteReport, updateReportStatus } = require('../../db');
+const { authenticateToken, requireTeknisi } = require('../../middleware/auth');
+const { listReports, getReportById, updateReportStatus, updateReportImages, deleteReport } = require('../../db');
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
+
+// Multer storage for uploads
+const uploadDir = path.join(__dirname, '..', '..', 'data', 'uploads');
+if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => cb(null, uploadDir),
+  filename: (req, file, cb) => {
+    const safeName = file.originalname.replace(/[^a-zA-Z0-9._-]/g, '_');
+    const name = `${Date.now()}_${safeName}`;
+    cb(null, name);
+  }
+});
+const upload = multer({ storage });
 
 const router = express.Router();
 
-// List reports
-router.get('/reports', authenticateToken, requireAdmin, async (req, res) => {
+// List reports (teknisi view)
+router.get('/reports', authenticateToken, requireTeknisi, async (req, res) => {
   try {
     const { search } = req.query;
     let rows = await listReports();
@@ -38,8 +54,8 @@ router.get('/reports', authenticateToken, requireAdmin, async (req, res) => {
   }
 });
 
-// Get single report
-router.get('/reports/:id', authenticateToken, requireAdmin, async (req, res) => {
+// Get single report (teknisi view)
+router.get('/reports/:id', authenticateToken, requireTeknisi, async (req, res) => {
   try {
     const row = await getReportById(req.params.id);
     if (!row) return res.status(404).json({ error: 'Report not found' });
@@ -49,8 +65,8 @@ router.get('/reports/:id', authenticateToken, requireAdmin, async (req, res) => 
   }
 });
 
-// Delete report
-router.delete('/reports/:id', authenticateToken, requireAdmin, async (req, res) => {
+// Delete report (teknisi)
+router.delete('/reports/:id', authenticateToken, requireTeknisi, async (req, res) => {
   try {
     await deleteReport(req.params.id);
     res.json({ ok: true, message: 'Report deleted successfully' });
@@ -59,10 +75,10 @@ router.delete('/reports/:id', authenticateToken, requireAdmin, async (req, res) 
   }
 });
 
-// Update report status
+// Update report status (teknisi only)
 router.put('/reports/:id/status',
   authenticateToken,
-  requireAdmin,
+  requireTeknisi,
   [
     body('status').isIn(['To-Do', 'In Progress', 'Done']).withMessage('Invalid status value')
   ],
@@ -81,5 +97,20 @@ router.put('/reports/:id/status',
     }
   }
 );
+
+// Upload images for a report (teknisi only)
+router.post('/reports/:id/images', authenticateToken, requireTeknisi, upload.array('images', 3), async (req, res) => {
+  try {
+    const files = req.files || [];
+    if (files.length === 0) {
+      return res.status(400).json({ error: 'No files uploaded' });
+    }
+    const urls = files.map(f => `/uploads/${f.filename}`).slice(0, 3);
+    await updateReportImages(req.params.id, urls);
+    res.json({ ok: true, message: 'Images uploaded', urls });
+  } catch (e) {
+    res.status(500).json({ error: 'Failed to upload images' });
+  }
+});
 
 module.exports = router;

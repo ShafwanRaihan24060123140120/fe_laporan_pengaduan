@@ -75,8 +75,32 @@ function requireAdminOrTeknisi(req, res, next) {
   next();
 }
 
+/**
+ * Middleware untuk membatasi akses hanya untuk teknisi
+ */
+function requireTeknisi(req, res, next) {
+  if (!req.user || req.user.role !== 'teknisi') {
+    return res.status(403).json({ error: 'Teknisi access required' });
+  }
+  next();
+}
+
+/**
+ * Middleware untuk autentikasi session
+ * Menggunakan informasi user yang disimpan di session
+ */
+function authenticateSession(req, res, next) {
+  if (req.session && req.session.user) {
+    req.user = req.session.user;
+    return next();
+  }
+  return res.status(401).json({ error: 'Authentication required (session)' });
+}
+
 module.exports = {
   authenticateToken,
+  authenticateSession,
   requireAdmin,
-  requireAdminOrTeknisi
+  requireAdminOrTeknisi,
+  requireTeknisi
 };

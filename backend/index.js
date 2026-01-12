@@ -3,11 +3,14 @@ const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
+const path = require('path');
 const { init } = require('./db');
 const { apiLimiter } = require('./middleware/rateLimiter');
 const authRouter = require('./routes/shared/auth');
 const reportsRouter = require('./routes/shared/reports');
 const adminRouter = require('./routes/admin');
+const teknisiRouter = require('./routes/teknisi');
+const sessionConfig = require('./sessionConfig');
 
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -56,6 +59,7 @@ app.use(cors({
 }));
 
 app.use(express.json({ limit: '10mb' }));
+app.use(sessionConfig);
 
 // Logging middleware
 if (NODE_ENV === 'development') {
@@ -64,8 +68,16 @@ if (NODE_ENV === 'development') {
   app.use(morgan('combined'));
 }
 
-// Apply rate limiting to all API routes
-app.use('/api', apiLimiter);
+// Apply rate limiting to all API routes (dengan whitelist untuk teknisi endpoints)
+const rateLimitMiddleware = (req, res, next) => {
+  // Skip rate limiting untuk teknisi endpoints
+  if (req.path.startsWith('/api/teknisi/reports')) {
+    return next();
+  }
+  apiLimiter(req, res, next);
+};
+
+app.use(rateLimitMiddleware);
 
 app.get('/api/health', (req, res) => {
   res.json({ ok: true, environment: NODE_ENV });
@@ -73,8 +85,12 @@ app.get('/api/health', (req, res) => {
 
 // Routers
 app.use('/api', authRouter);        // /login, /me
-app.use('/api', reportsRouter);     // /reports
-app.use('/api/admin', adminRouter); // /admin/users, /admin/dashboard
+app.use('/api', reportsRouter);     // /reports (shared)
+
+// Serve uploaded images
+app.use('/uploads', express.static(path.join(__dirname, 'data', 'uploads')));
+app.use('/api/admin', adminRouter);   // /admin/users, /admin/dashboard
+app.use('/api/teknisi', teknisiRouter); // /teknisi/reports
 
 // Global error handler
 app.use((err, req, res, next) => {

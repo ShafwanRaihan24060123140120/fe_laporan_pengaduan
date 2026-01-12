@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../shared/components/Navbar';
-import './LaporanAset.css';
+import './TeknisiLaporanAset.css';
 
 const statusMap = {
   'Pending': 'To-Do',
@@ -14,39 +14,72 @@ const statusMap = {
 };
 
 const getStatusClass = (status) => {
-  const mappedStatus = statusMap[status] || status;
-  switch (mappedStatus) {
-    case 'To-Do': return 'status-todo';
-    case 'Processed': return 'status-processed';
-    case 'Done': return 'status-done';
-    default: return '';
-  }
+  if (status === 'Selesai' || status === 'Done') return 'status-done';
+  if (status === 'Dalam Proses' || status === 'In Progress' || status === 'Processed') return 'status-in-progress';
+  return 'status-to-do';
 };
 
-export default function TeknisiLaporanAset() {
+function useTeknisiReports(searchTerm, navigate) {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const navigate = useNavigate();
 
   useEffect(() => {
     (async () => {
+      setLoading(true);
       try {
-        const res = await fetch('/api/reports');
+        const token = localStorage.getItem('token');
+        if (!token) {
+          navigate('/login');
+          return;
+        }
+        const url = searchTerm ? `/api/teknisi/reports?search=${encodeURIComponent(searchTerm)}` : '/api/teknisi/reports';
+        const res = await fetch(url, { headers: { 'Authorization': `Bearer ${token}` } });
+        if (res.status === 401) {
+          localStorage.clear();
+          navigate('/login');
+          return;
+        }
+        if (res.status === 429) {
+          setError('Terlalu banyak permintaan. Coba lagi sebentar lagi.');
+          return;
+        }
+        if (!res.ok) {
+          const t = await res.text();
+          setError(`Gagal memuat data (${res.status}). ${t}`.trim());
+          return;
+        }
         const data = await res.json();
         if (Array.isArray(data)) setItems(data);
         else setError('Format data tidak valid');
-      } catch (e) {
+      } catch (_) {
         setError('Gagal memuat data dari server');
       } finally {
         setLoading(false);
       }
     })();
+  }, [searchTerm, navigate]);
+
+  return { items, loading, error };
+}
+import { useEffect as useEffectTitle } from 'react';
+
+function useSetTeknisiListTitle() {
+  useEffectTitle(() => {
+    document.title = 'Laporan Aset | Teknisi';
+    return () => { document.title = 'Aplikasi Pengaduan Aset'; };
   }, []);
+}
+
+export default function TeknisiLaporanAset() {
+  const navigate = useNavigate();
+  const [searchTerm, setSearchTerm] = useState('');
+  const { items, loading, error } = useTeknisiReports(searchTerm, navigate);
+  useSetTeknisiListTitle();
 
   return (
     <div className="laporan-page">
-      <Navbar />
+      <Navbar searchTerm={searchTerm} onSearchChange={setSearchTerm} />
       <div className="laporan-wrap">
         {loading && <div style={{ textAlign:'center', color:'#666', padding:'20px' }}>Memuat data...</div>}
         {!loading && error && <div style={{ textAlign:'center', color:'#b00000', padding:'20px' }}>{error}</div>}
