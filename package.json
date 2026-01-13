@@ -4,10 +4,8 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "concurrently \"npm --prefix backend run dev\" \"npm --prefix frontend run dev\"",
-    "start": "concurrently \"npm --prefix backend start\" \"npm --prefix frontend run preview\"",
-    "frontend:dev": "npm --prefix frontend run dev",
-    "backend:dev": "npm --prefix backend run dev",
+    "dev": "npm --prefix frontend run dev",
+    "start": "npm --prefix frontend run preview",
     "lint": "npm --prefix frontend run lint",
     "build": "npm --prefix frontend run build",
     "preview": "npm --prefix frontend run preview"

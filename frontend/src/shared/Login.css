@@ -1,4 +1,3 @@
-/* Login page refreshed design */
 .login-page {
   min-height: 100vh;
   width: 100%;
@@ -10,7 +9,6 @@
   background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
 }
 
-/* Decorative background shapes */
 .login-page::before {
   display: none;
 }
@@ -161,7 +159,7 @@
 }
 
 .login-input::placeholder {
-  color: #dfe4ea; /* lighter placeholder to match red card */
+  color: #dfe4ea; 
 }
 
 .login-input:focus {
