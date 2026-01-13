@@ -4,19 +4,18 @@
 // Fungsi untuk class status
 // Custom hook ambil data laporan
 // Komponen utama
-import { Link, useNavigate } from 'react-router-dom';
+
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Navbar from '../shared/components/Navbar';
 import './LaporanAset.css';
 
-import { useEffect, useState } from 'react';
-import { useEffect as useEffectTitle } from 'react';
-
-function useSetAdminListTitle() {
-  useEffectTitle(() => {
-    document.title = 'Daftar Laporan Aset | Admin';
-    return () => { document.title = 'Aplikasi Pengaduan Aset'; };
-  }, []);
-}
+// Dummy data
+const DUMMY_REPORTS = [
+  { id: 'LAP001', email_pelapor: 'admin1@telkom.co.id', unit: 'Jakarta Barat', status: 'Pending' },
+  { id: 'LAP002', email_pelapor: 'admin2@telkom.co.id', unit: 'Jakarta Timur', status: 'Dalam Proses' },
+  { id: 'LAP003', email_pelapor: 'admin3@telkom.co.id', unit: 'Jakarta Selatan', status: 'Selesai' },
+];
 
 const statusMap = {
   'Pending': 'To-Do',
@@ -34,73 +33,31 @@ const getStatusClass = (status) => {
   return 'status-to-do';
 };
 
-function useReports(searchTerm) {
-  const [items, setItems] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  useEffect(() => {
-    (async () => {
-      setLoading(true);
-      try {
-        const token = localStorage.getItem('token');
-        if (!token) {
-          setError('Sesi berakhir, silakan login kembali');
-          window.location.href = '/login';
-          return;
-        }
-        const url = searchTerm ? `/api/reports?search=${encodeURIComponent(searchTerm)}` : '/api/reports';
-        const res = await fetch(url, {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
-        
-        if (res.status === 401) {
-          const data = await res.json().catch(() => ({}));
-          if (data.reason === 'password_changed') alert('Password Anda telah diganti. Silakan login kembali.');
-          localStorage.clear();
-          window.location.href = '/login';
-          return;
-        }
-
-        if (res.status === 429) {
-          setError('Terlalu banyak permintaan. Coba lagi sebentar lagi.');
-          return;
-        }
-
-        if (!res.ok) {
-          const txt = await res.text();
-          setError(`Gagal memuat data (${res.status}). ${txt || ''}`.trim());
-          return;
-        }
-
-        const data = await res.json();
-        if (Array.isArray(data)) setItems(data);
-        else setError('Format data tidak valid');
-      } catch (e) {
-        setError('Gagal memuat data dari server');
-      }
-      setLoading(false);
-    })();
-  }, [searchTerm]);
-  return { items, loading, error };
-}
 
 
 function LaporanAset() {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
-  useSetAdminListTitle();
-  const { items, loading, error } = useReports(searchTerm);
   const navigate = useNavigate();
 
-  // Tidak perlu blokir back browser di sini. Biarkan user bisa kembali ke halaman lain (misal login, dashboard, dsb),
-  // tapi pastikan navigasi ke detail sudah SPA (navigate) agar tidak ada entry history baru ke detail.
-
-  // Filter items berdasarkan status jika statusFilter dipilih
+  // Filter dummy data
   const filteredItems = statusFilter
-    ? items.filter(item => (statusMap[item.status] || item.status) === statusFilter)
-    : items;
+    ? DUMMY_REPORTS.filter(item => (statusMap[item.status] || item.status) === statusFilter)
+    : DUMMY_REPORTS;
+
+  // Filter by search term
+  const finalItems = searchTerm
+    ? filteredItems.filter(item =>
+        item.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (item.email_pelapor && item.email_pelapor.toLowerCase().includes(searchTerm.toLowerCase())) ||
+        (item.unit && item.unit.toLowerCase().includes(searchTerm.toLowerCase()))
+      )
+    : filteredItems;
+
+  useEffect(() => {
+    document.title = 'Daftar Laporan Aset | Admin';
+    return () => { document.title = 'Aplikasi Pengaduan Aset'; };
+  }, []);
 
   return (
     <div className="laporan-page">
@@ -111,18 +68,9 @@ function LaporanAset() {
         onStatusFilterChange={setStatusFilter}
       />
       <div className="laporan-wrap">
-        {loading && <div style={{textAlign:'center', color:'#666', padding:'20px'}}>Memuat data…</div>}
-        {!loading && error && (
-          <div style={{textAlign:'center', color:'#b00000', padding:'20px'}}>
-            {error}. Pastikan backend berjalan (npm start di folder server).
-          </div>
-        )}
-
-        {!loading && !error && filteredItems.length === 0 && (
+        {finalItems.length === 0 ? (
           <div style={{textAlign:'center', color:'#666', padding:'20px'}}>Tidak ada laporan.</div>
-        )}
-
-        {!loading && !error && filteredItems.length > 0 && (
+        ) : (
           <div className="laporan-table-container">
             <table className="laporan-table">
               <thead>
@@ -134,8 +82,8 @@ function LaporanAset() {
                 </tr>
               </thead>
               <tbody>
-                {filteredItems.map((item, index) => (
-                  <tr key={item.id} onClick={() => navigate(`/laporan/${item.id}`)} style={{cursor: 'pointer'}}>
+                {finalItems.map((item, index) => (
+                  <tr key={item.id} style={{cursor: 'default'}}>
                     <td>
                       <span className="table-code">{item.id}</span>
                     </td>

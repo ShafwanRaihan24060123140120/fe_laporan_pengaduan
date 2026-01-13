@@ -27,23 +27,10 @@ function Navbar({ searchTerm, onSearchChange, statusFilter, onStatusFilterChange
   }, [showStatusDropdown]);
   const navigate = useNavigate();
   const location = useLocation();
-  const [roleLabel, setRoleLabel] = useState('Admin 1');
+  const [roleLabel] = useState('Admin 1');
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const profileDropdownRef = useRef(null);
-
-  useEffect(() => {
-  const token = localStorage.getItem('token');
-  if (!token) return;
-
-  fetch('/api/me', { headers: { Authorization: `Bearer ${token}` } })
-    .then((r) => r.json())
-    .then((data) => {
-      const role = data?.user?.role;
-      setRoleLabel(role === 'teknisi' ? 'Teknisi' : 'Admin 1');
-    })
-    .catch(() => {});
-}, []);
 
   const handleLogout = () => {
     setShowLogoutModal(true);
@@ -55,9 +42,8 @@ function Navbar({ searchTerm, onSearchChange, statusFilter, onStatusFilterChange
     localStorage.removeItem('token');
     localStorage.removeItem('userName');
     localStorage.removeItem('role');
-    
-    // Hard redirect ke login dengan reload
-    window.location.href = '/login';
+    // Tidak melakukan redirect ke halaman manapun
+    setShowLogoutModal(false);
   };
 
   const showSearch = location.pathname.startsWith('/laporan-aset') || location.pathname.startsWith('/teknisi/laporan-aset');

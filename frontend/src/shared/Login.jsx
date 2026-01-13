@@ -93,5 +93,4 @@ function Login() {
     );
 }
 
-// Export Login
 export default Login;
