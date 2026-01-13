@@ -1,3 +1,5 @@
+// Import style
+// Komponen modal konfirmasi
 import './ConfirmModal.css';
 
 function ConfirmModal({ isOpen, title, message, onConfirm, onCancel }) {

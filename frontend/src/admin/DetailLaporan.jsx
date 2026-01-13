@@ -1,3 +1,11 @@
+// Import library dan komponen
+// Map status
+// Fungsi untuk class status
+// Fungsi untuk class status berikutnya
+// Komponen utama
+  // Back ke daftar laporan
+  // State
+  // Set judul tab
 import { useParams, useNavigate } from 'react-router-dom';
 import Navbar from '../shared/components/Navbar';
 import './DetailLaporan.css';

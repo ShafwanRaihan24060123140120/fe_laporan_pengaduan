@@ -1,3 +1,5 @@
+// Import logo dan style
+// Komponen logo
 import telkomLogo from '../assets/telkom-logo2.png';
 import './TelkomLogo.css';
 

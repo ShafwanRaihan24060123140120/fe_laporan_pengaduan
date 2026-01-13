@@ -1,3 +1,6 @@
+// Import library dan middleware
+// Router auth
+// Endpoint login
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');

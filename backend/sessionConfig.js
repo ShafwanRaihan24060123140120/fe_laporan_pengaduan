@@ -1,3 +1,4 @@
+// Konfigurasi session
 const session = require('express-session');
 const SQLiteStore = require('connect-sqlite3')(session);
 

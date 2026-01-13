@@ -1,3 +1,7 @@
+// Import library dan middleware
+// Router admin
+// Endpoint dashboard summary
+// Endpoint manajemen user
 const express = require('express');
 const { body, validationResult } = require('express-validator');
 const { authenticateToken, requireAdmin } = require('../../middleware/auth');

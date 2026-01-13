@@ -1,5 +1,10 @@
+// Import library dan komponen
+// Komponen utama App
+  // Cek autentikasi
+  // Cegah back ke login/detail
+  // Loading
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useLayoutEffect } from 'react';
 import Login from './shared/Login';
 import LaporanAset from './admin/LaporanAset';
 import DetailLaporan from './admin/DetailLaporan';
@@ -10,18 +15,28 @@ import Footer from './shared/components/Footer';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [userRole, setUserRole] = useState(null);
+  const [userRole, setUserRole] = useState('');
   const [loading, setLoading] = useState(true);
 
-  // Check authentication on mount
-  useEffect(() => {
+  // Pastikan state sudah sinkron sebelum render pertama
+  useLayoutEffect(() => {
     const token = localStorage.getItem('token');
     const role = localStorage.getItem('role');
-    if (token) {
-      setIsAuthenticated(true);
-      setUserRole(role);
-    }
+    setIsAuthenticated(!!token);
+    setUserRole(role || '');
     setLoading(false);
+  }, []);
+
+  // Sync state jika localStorage berubah (misal login/logout)
+  useEffect(() => {
+    const syncAuth = () => {
+      const token = localStorage.getItem('token');
+      const role = localStorage.getItem('role');
+      setIsAuthenticated(!!token);
+      setUserRole(role || '');
+    };
+    window.addEventListener('storage', syncAuth);
+    return () => window.removeEventListener('storage', syncAuth);
   }, []);
 
   // Prevent browser back to login page and detail pages only
@@ -52,7 +67,8 @@ function App() {
     };
   }, []);
 
-  if (loading) {
+  // Jangan render <Routes> jika userRole belum valid saat sudah login
+  if (loading || (isAuthenticated && userRole !== 'admin' && userRole !== 'teknisi')) {
     return (
       <div style={{
         display: 'flex',
@@ -69,45 +85,80 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Redirect root ke dashboard sesuai role jika sudah login */}
-        <Route 
-          path="/" 
+        {/* Landing page: redirect sesuai role jika login */}
+        <Route
+          path="/"
           element={
-            isAuthenticated 
-              ? (userRole === 'teknisi' 
-                  ? <Navigate to="/teknisi/laporan-aset" replace /> 
+            isAuthenticated
+              ? (userRole === 'teknisi'
+                  ? <Navigate to="/teknisi/laporan-aset" replace />
                   : <Navigate to="/laporan-aset" replace />)
               : <Navigate to="/login" replace />
-          } 
+          }
         />
-        
-        {/* Redirect login jika sudah authenticated */}
-        <Route 
-          path="/login" 
+
+        {/* Login page: redirect jika sudah login */}
+        <Route
+          path="/login"
           element={
-            isAuthenticated 
-              ? (userRole === 'teknisi' 
-                  ? <Navigate to="/teknisi/laporan-aset" replace /> 
+            isAuthenticated
+              ? (userRole === 'teknisi'
+                  ? <Navigate to="/teknisi/laporan-aset" replace />
                   : <Navigate to="/laporan-aset" replace />)
               : <Login setAuth={setIsAuthenticated} setRole={setUserRole} />
-          } 
+          }
         />
-        
-        <Route 
-          path="/laporan-aset" 
-          element={isAuthenticated ? <LaporanAset /> : <Navigate to="/login" />} 
+
+        {/* Admin dashboard */}
+        <Route
+          path="/laporan-aset"
+          element={
+            isAuthenticated && userRole === 'admin'
+              ? <LaporanAset />
+              : isAuthenticated
+                ? <Navigate to={userRole === 'teknisi' ? "/teknisi/laporan-aset" : "/login"} replace />
+                : <Navigate to="/login" />
+          }
         />
-        <Route 
-          path="/laporan/:id" 
-          element={isAuthenticated ? <DetailLaporan /> : <Navigate to="/login" />} 
+        {/* Admin detail */}
+        <Route
+          path="/laporan/:id"
+          element={
+            isAuthenticated && userRole === 'admin'
+              ? <DetailLaporan />
+              : isAuthenticated
+                ? <Navigate to={userRole === 'teknisi' ? "/teknisi/laporan-aset" : "/login"} replace />
+                : <Navigate to="/login" />
+          }
         />
-        <Route 
-          path="/teknisi/laporan-aset" 
-          element={isAuthenticated ? <TeknisiLaporanAset /> : <Navigate to="/login" />} 
+
+        {/* Teknisi dashboard */}
+        <Route
+          path="/teknisi/laporan-aset"
+          element={
+            isAuthenticated && userRole === 'teknisi'
+              ? <TeknisiLaporanAset />
+              : isAuthenticated
+                ? <Navigate to={userRole === 'admin' ? "/laporan-aset" : "/login"} replace />
+                : <Navigate to="/login" />
+          }
         />
-        <Route 
-          path="/teknisi/laporan/:id" 
-          element={isAuthenticated ? <TeknisiLaporanDetail /> : <Navigate to="/login" />} 
+        {/* Teknisi detail */}
+        <Route
+          path="/teknisi/laporan/:id"
+          element={
+            isAuthenticated && userRole === 'teknisi'
+              ? <TeknisiLaporanDetail />
+              : isAuthenticated
+                ? <Navigate to={userRole === 'admin' ? "/laporan-aset" : "/login"} replace />
+                : <Navigate to="/login" />
+          }
+        />
+
+        {/* Fallback: 404 simple */}
+        <Route
+          path="*"
+          element={<div style={{textAlign:'center',padding:'60px 0',color:'#b00',fontWeight:700}}>404 - Halaman tidak ditemukan</div>}
         />
       </Routes>
       <Footer />

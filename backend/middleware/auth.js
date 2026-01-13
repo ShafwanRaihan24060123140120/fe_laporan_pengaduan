@@ -1,3 +1,6 @@
+// Import library dan fungsi DB
+// Middleware autentikasi JWT
+// Middleware hanya admin
 const jwt = require('jsonwebtoken');
 const { getAdminByUsername, getTeknisiByUsername } = require('../db');
 

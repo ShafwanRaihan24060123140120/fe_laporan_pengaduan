@@ -1,3 +1,8 @@
+// Import library
+// Map status
+// Fungsi untuk class status
+// Custom hook ambil data laporan
+// Komponen utama
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../shared/components/Navbar';
@@ -74,21 +79,32 @@ function useSetTeknisiListTitle() {
 export default function TeknisiLaporanAset() {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('');
   const { items, loading, error } = useTeknisiReports(searchTerm, navigate);
   useSetTeknisiListTitle();
 
+  // Filter items berdasarkan status jika statusFilter dipilih
+  const filteredItems = statusFilter
+    ? items.filter(item => (statusMap[item.status] || item.status) === statusFilter)
+    : items;
+
   return (
     <div className="laporan-page">
-      <Navbar searchTerm={searchTerm} onSearchChange={setSearchTerm} />
+      <Navbar
+        searchTerm={searchTerm}
+        onSearchChange={setSearchTerm}
+        statusFilter={statusFilter}
+        onStatusFilterChange={setStatusFilter}
+      />
       <div className="laporan-wrap">
         {loading && <div style={{ textAlign:'center', color:'#666', padding:'20px' }}>Memuat data...</div>}
         {!loading && error && <div style={{ textAlign:'center', color:'#b00000', padding:'20px' }}>{error}</div>}
 
-        {!loading && !error && items.length === 0 && (
+        {!loading && !error && filteredItems.length === 0 && (
           <div style={{ textAlign:'center', color:'#666', padding:'20px' }}>Tidak ada laporan.</div>
         )}
 
-        {!loading && !error && items.length > 0 && (
+        {!loading && !error && filteredItems.length > 0 && (
           <div className="laporan-table-container">
             <table className="laporan-table">
               <thead>
@@ -100,7 +116,7 @@ export default function TeknisiLaporanAset() {
                 </tr>
               </thead>
               <tbody>
-                {items.map((item) => (
+                {filteredItems.map((item) => (
                   <tr key={item.id} style={{ cursor:'pointer' }} onClick={() => navigate(`/teknisi/laporan/${item.id}`)}>
                     <td><span className="table-code">{item.id}</span></td>
                     <td>{item.email_pelapor || '-'}</td>

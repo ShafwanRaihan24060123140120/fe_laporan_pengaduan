@@ -1,3 +1,5 @@
+// Import style
+// Komponen Footer
 import './Footer.css';
 
 function Footer() {

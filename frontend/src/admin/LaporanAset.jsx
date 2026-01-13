@@ -1,3 +1,9 @@
+// Import library dan komponen
+// Custom hook set judul
+// Map status
+// Fungsi untuk class status
+// Custom hook ambil data laporan
+// Komponen utama
 import { Link, useNavigate } from 'react-router-dom';
 import Navbar from '../shared/components/Navbar';
 import './LaporanAset.css';
@@ -80,8 +86,10 @@ function useReports(searchTerm) {
   return { items, loading, error };
 }
 
+
 function LaporanAset() {
   const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('');
   useSetAdminListTitle();
   const { items, loading, error } = useReports(searchTerm);
   const navigate = useNavigate();
@@ -89,9 +97,19 @@ function LaporanAset() {
   // Tidak perlu blokir back browser di sini. Biarkan user bisa kembali ke halaman lain (misal login, dashboard, dsb),
   // tapi pastikan navigasi ke detail sudah SPA (navigate) agar tidak ada entry history baru ke detail.
 
+  // Filter items berdasarkan status jika statusFilter dipilih
+  const filteredItems = statusFilter
+    ? items.filter(item => (statusMap[item.status] || item.status) === statusFilter)
+    : items;
+
   return (
     <div className="laporan-page">
-      <Navbar searchTerm={searchTerm} onSearchChange={setSearchTerm} />
+      <Navbar
+        searchTerm={searchTerm}
+        onSearchChange={setSearchTerm}
+        statusFilter={statusFilter}
+        onStatusFilterChange={setStatusFilter}
+      />
       <div className="laporan-wrap">
         {loading && <div style={{textAlign:'center', color:'#666', padding:'20px'}}>Memuat data…</div>}
         {!loading && error && (
@@ -100,11 +118,11 @@ function LaporanAset() {
           </div>
         )}
 
-        {!loading && !error && items.length === 0 && (
+        {!loading && !error && filteredItems.length === 0 && (
           <div style={{textAlign:'center', color:'#666', padding:'20px'}}>Tidak ada laporan.</div>
         )}
 
-        {!loading && !error && items.length > 0 && (
+        {!loading && !error && filteredItems.length > 0 && (
           <div className="laporan-table-container">
             <table className="laporan-table">
               <thead>
@@ -116,7 +134,7 @@ function LaporanAset() {
                 </tr>
               </thead>
               <tbody>
-                {items.map((item, index) => (
+                {filteredItems.map((item, index) => (
                   <tr key={item.id} onClick={() => navigate(`/laporan/${item.id}`)} style={{cursor: 'pointer'}}>
                     <td>
                       <span className="table-code">{item.id}</span>

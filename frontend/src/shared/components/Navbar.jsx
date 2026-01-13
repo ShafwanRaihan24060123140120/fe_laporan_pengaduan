@@ -1,3 +1,9 @@
+// Import library dan style
+// Komponen Navbar
+  // State
+  // Ambil role user
+  // Logout
+  // Tampilkan search
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import './Navbar.css';
 import { useState, useEffect, useRef } from 'react';
@@ -5,7 +11,20 @@ import ConfirmModal from './ConfirmModal';
 import logoTelkom from '../assets/telkom-logo2.png';
 
 
-function Navbar({ searchTerm, onSearchChange }) {
+function Navbar({ searchTerm, onSearchChange, statusFilter, onStatusFilterChange }) {
+  const [showStatusDropdown, setShowStatusDropdown] = useState(false);
+  const statusDropdownRef = useRef(null);
+
+  useEffect(() => {
+    if (!showStatusDropdown) return;
+    const handleClick = (e) => {
+      if (statusDropdownRef.current && !statusDropdownRef.current.contains(e.target)) {
+        setShowStatusDropdown(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, [showStatusDropdown]);
   const navigate = useNavigate();
   const location = useLocation();
   const [roleLabel, setRoleLabel] = useState('Admin 1');
@@ -71,18 +90,51 @@ function Navbar({ searchTerm, onSearchChange }) {
       </div>
       
       {showSearch && (
-        <div className="navbar-search">
-          <input 
-            type="text" 
-            placeholder="Cari berdasarkan Pelapor, Lokasi, Tanggal, Aset, Deskripsi" 
-            value={searchTerm || ''}
-            onChange={(e) => onSearchChange && onSearchChange(e.target.value)}
-          />
-          <span className="search-icon" aria-hidden="true">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-              <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
-            </svg>
-          </span>
+        <div className="navbar-search-filter-row">
+          <div className="navbar-search">
+            <input 
+              className="navbar-searchbar-input"
+              type="text" 
+              placeholder="Cari berdasarkan Pelapor, Lokasi, Tanggal, Aset, Deskripsi" 
+              value={searchTerm || ''}
+              onChange={(e) => onSearchChange && onSearchChange(e.target.value)}
+            />
+            <span className="search-icon" aria-hidden="true">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+              </svg>
+            </span>
+          </div>
+          <div className="navbar-status-filter-group-outside" ref={statusDropdownRef}>
+            <button
+              className="navbar-status-filter-btn-outside"
+              aria-label="Filter Status"
+              onClick={() => setShowStatusDropdown((v) => !v)}
+              type="button"
+            >
+              Filter <span className="navbar-status-filter-caret">▼</span>
+            </button>
+            {showStatusDropdown && (
+              <div className="navbar-status-filter-dropdown navbar-status-filter-dropdown-outside">
+                <div
+                  className={`navbar-status-filter-item${statusFilter === '' ? ' selected' : ''}`}
+                  onClick={() => { onStatusFilterChange && onStatusFilterChange(''); setShowStatusDropdown(false); }}
+                >Semua</div>
+                <div
+                  className={`navbar-status-filter-item${statusFilter === 'To-Do' ? ' selected' : ''}`}
+                  onClick={() => { onStatusFilterChange && onStatusFilterChange('To-Do'); setShowStatusDropdown(false); }}
+                >To-Do</div>
+                <div
+                  className={`navbar-status-filter-item${statusFilter === 'Processed' ? ' selected' : ''}`}
+                  onClick={() => { onStatusFilterChange && onStatusFilterChange('Processed'); setShowStatusDropdown(false); }}
+                >Processed</div>
+                <div
+                  className={`navbar-status-filter-item${statusFilter === 'Done' ? ' selected' : ''}`}
+                  onClick={() => { onStatusFilterChange && onStatusFilterChange('Done'); setShowStatusDropdown(false); }}
+                >Done</div>
+              </div>
+            )}
+          </div>
         </div>
       )}
       

@@ -1,3 +1,6 @@
+// Import library
+// Rate limiter umum
+// Rate limiter login
 const rateLimit = require('express-rate-limit');
 
 /**

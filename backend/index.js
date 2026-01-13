@@ -1,3 +1,8 @@
+// Import library dan konfigurasi
+// Inisialisasi app
+// Cek JWT_SECRET
+// Middleware keamanan
+// Konfigurasi CORS
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');

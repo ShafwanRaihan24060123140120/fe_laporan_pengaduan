@@ -1,3 +1,7 @@
+// Import library dan middleware
+// Konfigurasi upload file
+// Router teknisi
+// Endpoint laporan teknisi
 const express = require('express');
 const { body, validationResult } = require('express-validator');
 const { authenticateToken, requireTeknisi } = require('../../middleware/auth');
