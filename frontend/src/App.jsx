@@ -8,6 +8,7 @@
 import './App.css';
 import Footer from './shared/components/Footer';
 import LaporanAset from './admin/LaporanAset';
+import DetailLaporan from './admin/DetailLaporan';
 import Login from './shared/Login';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 
@@ -20,7 +21,7 @@ function App() {
           <Routes>
             <Route path="/login" element={<Login />} />
             <Route path="/laporan-aset" element={<LaporanAset />} />
-            {/* <Route path="/laporan/:id" element={<DetailLaporan />} /> */}
+            <Route path="/laporan/:id" element={<DetailLaporan />} />
             <Route path="*" element={<Navigate to="/login" replace />} />
           </Routes>
         </div>
