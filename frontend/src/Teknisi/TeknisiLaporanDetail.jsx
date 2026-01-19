@@ -1,11 +1,3 @@
-// Import library
-// Map status
-// Fungsi untuk class status
-// Fungsi untuk class status berikutnya
-// Komponen utama
-  // Back ke daftar laporan
-  // State
-  // Set judul tab
 import { useParams, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import Navbar from '../shared/components/Navbar';
@@ -70,53 +62,115 @@ export default function TeknisiLaporanDetail() {
   }, [report, id]);
 
   useEffect(() => {
-    (async () => {
-      try {
-        const token = localStorage.getItem('token');
-        if (!token) {
-          navigate('/login');
-          return;
-        }
-        const res = await fetch(`/api/teknisi/reports/${id}`, {
-          headers: { 'Authorization': `Bearer ${token}` }
-        });
-        if (res.status === 401) {
-          localStorage.clear();
-          navigate('/login');
-          return;
-        }
-        if (!res.ok) {
-          setError('Gagal memuat detail laporan');
-          return;
-        }
-        const data = await res.json();
-        setReport(data);
-      } catch (_) {
-        setError('Gagal memuat detail laporan');
+    // Dummy data untuk development tanpa backend
+    const dummyReports = [
+      {
+        id: 'LP-001',
+        email_pelapor: 'user1@email.com',
+        unit: 'Witel Jakarta Centrum',
+        tanggal: '2026-01-01',
+        nama_barang: 'Laptop Lenovo',
+        deskripsi: 'Kerusakan pada layar',
+        status: 'Pending',
+        image_url: '',
+        image_url2: '',
+        image_url3: ''
+      },
+      {
+        id: 'LP-002',
+        email_pelapor: 'user2@email.com',
+        unit: 'Witel Jakarta Timur',
+        tanggal: '2026-01-02',
+        nama_barang: 'Printer Epson',
+        deskripsi: 'Tinta bocor',
+        status: 'Dalam Proses',
+        image_url: '',
+        image_url2: '',
+        image_url3: ''
+      },
+      {
+        id: 'LP-003',
+        email_pelapor: 'user3@email.com',
+        unit: 'Witel Jakarta Barat',
+        tanggal: '2026-01-03',
+        nama_barang: 'Proyektor',
+        deskripsi: 'Tidak bisa menyala',
+        status: 'Selesai',
+        image_url: '',
+        image_url2: '',
+        image_url3: ''
+      },
+      {
+        id: 'LP-004',
+        email_pelapor: 'user4@email.com',
+        unit: 'Witel Jakarta Selatan',
+        tanggal: '2026-01-04',
+        nama_barang: 'Monitor Samsung',
+        deskripsi: 'Layar bergaris',
+        status: 'Pending',
+        image_url: '',
+        image_url2: '',
+        image_url3: ''
+      },
+      {
+        id: 'LP-005',
+        email_pelapor: 'user5@email.com',
+        unit: 'Witel Jakarta Pusat',
+        tanggal: '2026-01-05',
+        nama_barang: 'Router TP-Link',
+        deskripsi: 'Tidak bisa konek internet',
+        status: 'Dalam Proses',
+        image_url: '',
+        image_url2: '',
+        image_url3: ''
+      },
+      {
+        id: 'LP-006',
+        email_pelapor: 'user6@email.com',
+        unit: 'Witel Jakarta Utara',
+        tanggal: '2026-01-06',
+        nama_barang: 'Switch Cisco',
+        deskripsi: 'Port mati',
+        status: 'Selesai',
+        image_url: '',
+        image_url2: '',
+        image_url3: ''
       }
-    })();
-  }, [id, navigate]);
+    ];
+    const found = dummyReports.find(r => r.id === id);
+    if (found) {
+      setReport(found);
+      setError('');
+    } else {
+      setReport(null);
+      setError('Laporan tidak ditemukan (dummy).');
+    }
+  }, [id]);
 
-  // Fetch list for similar cards
+  // Dummy list untuk navigasi berikutnya
   useEffect(() => {
-    (async () => {
-      try {
-        const token = localStorage.getItem('token');
-        if (!token) return;
-        const res = await fetch('/api/teknisi/reports', { headers: { 'Authorization': `Bearer ${token}` } });
-        if (res.status === 401) {
-          localStorage.clear();
-          navigate('/login');
-          return;
-        }
-        if (!res.ok) return;
-        const data = await res.json();
-        if (Array.isArray(data)) setAllReports(data);
-      } catch (_) {
-        // ignore list errors here
+    const dummyReports = [
+      {
+        id: 'LP-001', email_pelapor: 'user1@email.com', unit: 'Witel Jakarta Centrum', tanggal: '2026-01-01', nama_barang: 'Laptop Lenovo', deskripsi: 'Kerusakan pada layar', status: 'Pending', image_url: '', image_url2: '', image_url3: ''
+      },
+      {
+        id: 'LP-002', email_pelapor: 'user2@email.com', unit: 'Witel Jakarta Timur', tanggal: '2026-01-02', nama_barang: 'Printer Epson', deskripsi: 'Tinta bocor', status: 'Dalam Proses', image_url: '', image_url2: '', image_url3: ''
+      },
+      {
+        id: 'LP-003', email_pelapor: 'user3@email.com', unit: 'Witel Jakarta Barat', tanggal: '2026-01-03', nama_barang: 'Proyektor', deskripsi: 'Tidak bisa menyala', status: 'Selesai', image_url: '', image_url2: '', image_url3: ''
+      },
+      {
+        id: 'LP-004', email_pelapor: 'user4@email.com', unit: 'Witel Jakarta Selatan', tanggal: '2026-01-04', nama_barang: 'Monitor Samsung', deskripsi: 'Layar bergaris', status: 'Pending', image_url: '', image_url2: '', image_url3: ''
+      },
+      {
+        id: 'LP-005', email_pelapor: 'user5@email.com', unit: 'Witel Jakarta Pusat', tanggal: '2026-01-05', nama_barang: 'Router TP-Link', deskripsi: 'Tidak bisa konek internet', status: 'Dalam Proses', image_url: '', image_url2: '', image_url3: ''
+      },
+      {
+        id: 'LP-006', email_pelapor: 'user6@email.com', unit: 'Witel Jakarta Utara', tanggal: '2026-01-06', nama_barang: 'Switch Cisco', deskripsi: 'Port mati', status: 'Selesai', image_url: '', image_url2: '', image_url3: ''
       }
-    })();
-  }, [id, navigate]);
+    ];
+    setAllReports(dummyReports);
+  }, [id]);
 
   useEffect(() => {
     if (report && allReports.length > 0) {
@@ -149,42 +203,19 @@ export default function TeknisiLaporanDetail() {
     setError('');
     setFiles(selectedFiles);
     
-    try {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        navigate('/login');
-        return;
-      }
-      
-      const form = new FormData();
-      Array.from(selectedFiles).slice(0,3).forEach(f => form.append('images', f));
-      setUploading(true);
-      const res = await fetch(`/api/teknisi/reports/${id}/images`, {
-        method: 'POST',
-        headers: { 'Authorization': `Bearer ${token}` },
-        body: form
-      });
+    // Simulasi upload dummy: tampilkan gambar yang dipilih sebagai URL lokal
+    setUploading(true);
+    const fileUrls = Array.from(selectedFiles).slice(0,3).map(f => URL.createObjectURL(f));
+    setTimeout(() => {
+      setReport(prev => prev ? {
+        ...prev,
+        image_url: fileUrls[0] || prev.image_url,
+        image_url2: fileUrls[1] || prev.image_url2,
+        image_url3: fileUrls[2] || prev.image_url3
+      } : prev);
       setUploading(false);
-      if (res.status === 401) {
-        localStorage.clear();
-        navigate('/login');
-        return;
-      }
-      if (!res.ok) {
-        const t = await res.text();
-        setError(`Gagal mengunggah gambar (${res.status}). ${t}`);
-        return;
-      }
-      const data = await res.json();
-      const [u1, u2, u3] = data.urls || [];
-      setReport({ ...report, image_url: u1 || report?.image_url, image_url2: u2 || report?.image_url2, image_url3: u3 || report?.image_url3 });
-      
-      // Reset input file
-      e.target.value = '';
-    } catch (_) {
-      setUploading(false);
-      setError('Terjadi kesalahan saat upload');
-    }
+      setError('');
+    }, 800);
   };
 
   const handleStatusCycle = () => {
@@ -200,32 +231,8 @@ export default function TeknisiLaporanDetail() {
       isOpen: true,
       title: 'Konfirmasi',
       message: flow.msg,
-      action: async () => {
-        try {
-          const token = localStorage.getItem('token');
-          if (!token) {
-            navigate('/login');
-            return;
-          }
-          const res = await fetch(`/api/teknisi/reports/${id}/status`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-            body: JSON.stringify({ status: flow.db })
-          });
-          if (res.status === 401) {
-            localStorage.clear();
-            navigate('/login');
-            return;
-          }
-          if (!res.ok) {
-            const txt = await res.text();
-            alert(`Gagal mengubah status (${res.status}). ${txt}`);
-            return;
-          }
-          setReport({ ...report, status: flow.db });
-        } catch (_) {
-          alert('Terjadi kesalahan saat mengubah status');
-        }
+      action: () => {
+        setReport(prev => prev ? { ...prev, status: flow.db } : prev);
         setModal({ isOpen: false, title: '', message: '', action: null });
       }
     });
