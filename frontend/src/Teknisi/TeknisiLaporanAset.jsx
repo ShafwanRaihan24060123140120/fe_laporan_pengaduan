@@ -141,6 +141,7 @@ export default function TeknisiLaporanAset() {
   const [statusFilter, setStatusFilter] = useState('');
   const { items, loading, error } = useTeknisiReports(searchTerm, navigate);
   useSetTeknisiListTitle();
+  // Tidak perlu handler popstate di sini, sudah dihandle global di App.jsx
 
   // Filter items berdasarkan status jika statusFilter dipilih
   const filteredItems = statusFilter

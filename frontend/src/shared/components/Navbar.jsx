@@ -27,7 +27,11 @@ function Navbar({ searchTerm, onSearchChange, statusFilter, onStatusFilterChange
   }, [showStatusDropdown]);
   const navigate = useNavigate();
   const location = useLocation();
-  const [roleLabel] = useState('Admin 1');
+  // Tentukan label role berdasarkan path
+  let roleLabel = 'Admin 1';
+  if (location.pathname.startsWith('/teknisi')) {
+    roleLabel = 'Teknisi';
+  }
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const profileDropdownRef = useRef(null);
