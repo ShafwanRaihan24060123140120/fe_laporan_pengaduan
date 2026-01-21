@@ -1,8 +1,3 @@
-// Import library
-// Map status
-// Fungsi untuk class status
-// Custom hook ambil data laporan
-// Komponen utama
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../shared/components/Navbar';
@@ -24,13 +19,6 @@ const getStatusClass = (status) => {
   return 'status-to-do';
 };
 
-// ===== Tambahan: dummy data untuk tanpa backend =====
-const DUMMY_REPORTS = [
-  { id: 'LP-001', email_pelapor: 'user1@email.com', unit: 'Witel Jakarta Centrum', status: 'Pending' },
-  { id: 'LP-002', email_pelapor: 'user2@email.com', unit: 'Witel Jakarta Timur', status: 'Dalam Proses' },
-  { id: 'LP-003', email_pelapor: 'user3@email.com', unit: 'Witel Jakarta Barat', status: 'Selesai' },
-];
-
 function useTeknisiReports(searchTerm, navigate) {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -41,33 +29,12 @@ function useTeknisiReports(searchTerm, navigate) {
       setLoading(true);
       try {
         const token = localStorage.getItem('token');
-
-        // ===== Perubahan kecil: kalau belum ada backend/token, tampilkan dummy =====
-        // Kalau Anda ingin tetap paksa login, hapus blok ini.
         if (!token) {
-          const data = searchTerm
-            ? DUMMY_REPORTS.filter((x) => {
-                const q = searchTerm.toLowerCase();
-                return (
-                  String(x.id).toLowerCase().includes(q) ||
-                  String(x.email_pelapor || '').toLowerCase().includes(q) ||
-                  String(x.unit || '').toLowerCase().includes(q) ||
-                  String(x.status || '').toLowerCase().includes(q)
-                );
-              })
-            : DUMMY_REPORTS;
-
-          setItems(data);
-          setError('');
+          navigate('/login');
           return;
         }
-
-        const url = searchTerm
-          ? `/api/teknisi/reports?search=${encodeURIComponent(searchTerm)}`
-          : '/api/teknisi/reports';
-
+        const url = searchTerm ? `/api/teknisi/reports?search=${encodeURIComponent(searchTerm)}` : '/api/teknisi/reports';
         const res = await fetch(url, { headers: { 'Authorization': `Bearer ${token}` } });
-
         if (res.status === 401) {
           localStorage.clear();
           navigate('/login');
@@ -79,43 +46,13 @@ function useTeknisiReports(searchTerm, navigate) {
         }
         if (!res.ok) {
           const t = await res.text();
-
-          // ===== Perubahan kecil: kalau server error, fallback dummy supaya page tampil =====
-          const data = searchTerm
-            ? DUMMY_REPORTS.filter((x) => {
-                const q = searchTerm.toLowerCase();
-                return (
-                  String(x.id).toLowerCase().includes(q) ||
-                  String(x.email_pelapor || '').toLowerCase().includes(q) ||
-                  String(x.unit || '').toLowerCase().includes(q) ||
-                  String(x.status || '').toLowerCase().includes(q)
-                );
-              })
-            : DUMMY_REPORTS;
-
-          setItems(data);
           setError(`Gagal memuat data (${res.status}). ${t}`.trim());
           return;
         }
-
         const data = await res.json();
         if (Array.isArray(data)) setItems(data);
         else setError('Format data tidak valid');
       } catch (_) {
-        // ===== Perubahan kecil: kalau fetch gagal (backend tidak ada), fallback dummy =====
-        const data = searchTerm
-          ? DUMMY_REPORTS.filter((x) => {
-              const q = searchTerm.toLowerCase();
-              return (
-                String(x.id).toLowerCase().includes(q) ||
-                String(x.email_pelapor || '').toLowerCase().includes(q) ||
-                String(x.unit || '').toLowerCase().includes(q) ||
-                String(x.status || '').toLowerCase().includes(q)
-              );
-            })
-          : DUMMY_REPORTS;
-
-        setItems(data);
         setError('Gagal memuat data dari server');
       } finally {
         setLoading(false);
@@ -125,7 +62,6 @@ function useTeknisiReports(searchTerm, navigate) {
 
   return { items, loading, error };
 }
-
 import { useEffect as useEffectTitle } from 'react';
 
 function useSetTeknisiListTitle() {
@@ -141,7 +77,6 @@ export default function TeknisiLaporanAset() {
   const [statusFilter, setStatusFilter] = useState('');
   const { items, loading, error } = useTeknisiReports(searchTerm, navigate);
   useSetTeknisiListTitle();
-  // Tidak perlu handler popstate di sini, sudah dihandle global di App.jsx
 
   // Filter items berdasarkan status jika statusFilter dipilih
   const filteredItems = statusFilter
@@ -177,7 +112,7 @@ export default function TeknisiLaporanAset() {
               </thead>
               <tbody>
                 {filteredItems.map((item) => (
-                  <tr key={item.id} style={{ cursor:'pointer' }} onClick={() => navigate(`/teknisi/laporan/${item.id}`)}>
+                  <tr key={item.id} style={{ cursor:'pointer' }} onClick={() => window.open(`/teknisi/laporan/${item.id}`, '_blank')}>
                     <td><span className="table-code">{item.id}</span></td>
                     <td>{item.email_pelapor || '-'}</td>
                     <td>{item.unit || '-'}</td>

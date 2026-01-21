@@ -1,9 +1,11 @@
+// Import library
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './Login.css';
 import TelkomLogo from './components/TelkomLogo';
 
 // Komponen Login
-function Login() {
+function Login({ setAuth, setRole }) {
     // Set judul
     useEffect(() => {
       document.title = 'Login | Sistem Laporan Pengaduan';
@@ -15,7 +17,20 @@ function Login() {
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
+    const navigate = useNavigate();
 
+    // Redirect jika sudah login
+    useEffect(() => {
+      const token = localStorage.getItem('token');
+      if (token) {
+        const role = localStorage.getItem('role');
+        if (role === 'teknisi') {
+          navigate('/teknisi/laporan-aset', { replace: true });
+        } else {
+          navigate('/laporan-aset', { replace: true });
+        }
+      }
+    }, [navigate]);
 
     // Render halaman
     return (
@@ -49,12 +64,47 @@ function Login() {
             <div className="login-card">
               <h2 className="login-card-title">Login</h2>
               <form
-                className="login-form"
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  setError('Belum ada backend.');
+              className="login-form"
+                // Submit login
+                onSubmit={async (e) => {
+                  e.preventDefault(); // Stop reload
+                  setError(''); // Reset error
+                  setLoading(true); // Loading
+                  try {
+                    // Kirim login
+                    const res = await fetch('/api/login', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ username, password })
+                    });
+                    const data = await res.json();
+                    if (!res.ok) {
+                      // Error login
+                      throw new Error(data?.error || 'Login gagal');
+                    }
+                    // Validasi role
+                    const role = data.user?.role;
+                    if (role !== 'admin' && role !== 'teknisi') {
+                      throw new Error('Role tidak valid. Hubungi admin.');
+                    }
+                    // Simpan token dan role
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('userName', username);
+                    localStorage.setItem('role', role);
+                    if (setAuth) setAuth(true);
+                    if (setRole) setRole(role);
+                    // Redirect sesuai role
+                    if (role === 'teknisi') navigate('/teknisi/laporan-aset');
+                    else navigate('/laporan-aset');
+                  } catch (err) {
+                    // Tampilkan error
+                    setError(err.message);
+                  } finally {
+                    // Selesai loading
+                    setLoading(false);
+                  }
                 }}
-              >
+            >
 
                 {/* Username */}
                 <label className="login-label" htmlFor="username">Username:</label>
@@ -89,8 +139,10 @@ function Login() {
           </div>
         </div>
 
+        {/* Footer global */}
       </div>
     );
 }
 
+// Export Login
 export default Login;

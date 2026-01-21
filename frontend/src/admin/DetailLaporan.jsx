@@ -28,6 +28,18 @@ const getNextStatusClass = (status) => {
 };
 
 function DetailLaporan() {
+    // Blokir tombol back browser agar tidak bisa kembali ke halaman sebelumnya
+    useEffect(() => {
+      // Push dummy state agar history tidak bisa di-back
+      window.history.pushState(null, '', window.location.href);
+      const handlePopState = (e) => {
+        window.history.pushState(null, '', window.location.href);
+      };
+      window.addEventListener('popstate', handlePopState);
+      return () => {
+        window.removeEventListener('popstate', handlePopState);
+      };
+    }, []);
   const { id } = useParams();
   const navigate = useNavigate();
   const [report, setReport] = useState(null);
@@ -53,97 +65,92 @@ function DetailLaporan() {
   }, [report]);
 
   useEffect(() => {
-    // Dummy data 
-    const dummyReports = [
-      {
-        id: 'LAP001',
-        email_pelapor: 'admin1@telkom.co.id',
-        unit: 'Jakarta Barat',
-        tanggal: '2026-01-01',
-        nama_barang: 'Laptop Lenovo',
-        deskripsi: 'Kerusakan pada layar',
-        status: 'Pending',
-        image_url: '',
-        image_url2: '',
-        image_url3: ''
-      },
-      {
-        id: 'LAP002',
-        email_pelapor: 'admin2@telkom.co.id',
-        unit: 'Jakarta Timur',
-        tanggal: '2026-01-02',
-        nama_barang: 'Printer Epson',
-        deskripsi: 'Tinta bocor',
-        status: 'Dalam Proses',
-        image_url: '',
-        image_url2: '',
-        image_url3: ''
-      },
-      {
-        id: 'LAP003',
-        email_pelapor: 'admin3@telkom.co.id',
-        unit: 'Jakarta Selatan',
-        tanggal: '2026-01-03',
-        nama_barang: 'Proyektor',
-        deskripsi: 'Tidak bisa menyala',
-        status: 'Selesai',
-        image_url: '',
-        image_url2: '',
-        image_url3: ''
+    (async () => {
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+          setError('Sesi berakhir, silakan login kembali');
+          window.location.href = '/login';
+          return;
+        }
+        const res = await fetch(`/api/reports/${id}`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        
+        if (res.status === 401) {
+          const data = await res.json().catch(() => ({}));
+          if (data.reason === 'password_changed') alert('Password Anda telah diganti. Silakan login kembali.');
+          localStorage.clear();
+          window.location.href = '/login';
+          return;
+        }
+        
+        if (res.status === 429) {
+          setError('Terlalu banyak permintaan. Coba lagi sebentar lagi.');
+          return;
+        }
+
+        if (!res.ok) {
+          const txt = await res.text();
+          setError(`Gagal memuat laporan (${res.status}). ${txt || ''}`.trim());
+          return;
+        }
+
+        const data = await res.json();
+        setReport(data);
+      } catch (e) {
+        // Error handled by alerts above
       }
-    ];
-    const found = dummyReports.find(r => r.id === id);
-    if (found) {
-      setReport(found);
-      setError('');
-    } else {
-      setReport(null);
-      setError('Laporan tidak ditemukan (dummy).');
-    }
+    })();
   }, [id]);
 
+  // Fetch list of all report IDs to enable "Berikutnya" navigation
   useEffect(() => {
-    // Dummy data untuk daftar laporan
-    const dummyReports = [
-      {
-        id: 'LAP001',
-        email_pelapor: 'admin1@telkom.co.id',
-        unit: 'Jakarta Barat',
-        tanggal: '2026-01-01',
-        nama_barang: 'Laptop Lenovo',
-        deskripsi: 'Kerusakan pada layar',
-        status: 'Pending',
-        image_url: '',
-        image_url2: '',
-        image_url3: ''
-      },
-      {
-        id: 'LAP002',
-        email_pelapor: 'admin2@telkom.co.id',
-        unit: 'Jakarta Timur',
-        tanggal: '2026-01-02',
-        nama_barang: 'Printer Epson',
-        deskripsi: 'Tinta bocor',
-        status: 'Dalam Proses',
-        image_url: '',
-        image_url2: '',
-        image_url3: ''
-      },
-      {
-        id: 'LAP003',
-        email_pelapor: 'admin3@telkom.co.id',
-        unit: 'Jakarta Selatan',
-        tanggal: '2026-01-03',
-        nama_barang: 'Proyektor',
-        deskripsi: 'Tidak bisa menyala',
-        status: 'Selesai',
-        image_url: '',
-        image_url2: '',
-        image_url3: ''
+    (async () => {
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+          setError('Sesi berakhir, silakan login kembali');
+          window.location.href = '/login';
+          return;
+        }
+        const res = await fetch('/api/reports', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        
+        if (res.status === 401) {
+          const data = await res.json().catch(() => ({}));
+          if (data.reason === 'password_changed') alert('Password Anda telah diganti. Silakan login kembali.');
+          localStorage.clear();
+          window.location.href = '/login';
+          return;
+        }
+        
+        if (res.status === 429) {
+          setError('Terlalu banyak permintaan. Coba lagi sebentar lagi.');
+          return;
+        }
+
+        if (!res.ok) {
+          const txt = await res.text();
+          setError(`Gagal memuat daftar laporan (${res.status}). ${txt || ''}`.trim());
+          return;
+        }
+
+        const data = await res.json();
+        if (Array.isArray(data)) {
+          setAllReports(data);
+          const ids = data.map(r => r.id).sort();
+          setAllIds(ids);
+        }
+      } catch (e) {
+        // Navigation error handled silently
       }
-    ];
-    setAllReports(dummyReports);
-    setAllIds(dummyReports.map(r => r.id).sort());
+    })();
   }, [id]);
 
   // Filter similar reports by unit
@@ -162,21 +169,71 @@ function DetailLaporan() {
   const handleStatusCycle = () => {
     if (!report) return;
     const currentMapped = statusMap[report.status];
+    // Hanya kirim nilai: 'To-Do', 'In Progress', 'Done'
     const statusFlow = {
       'To-Do': { next: 'Processed', db: 'In Progress', msg: 'Mulai proses pengerjaan?' },
       'Processed': { next: 'Done', db: 'Done', msg: 'Tandai laporan sebagai selesai?' },
       'Done': { next: 'To-Do', db: 'To-Do', msg: 'Reset status ke To-Do?' }
     };
     const flow = statusFlow[currentMapped];
+    
     setModal({
       isOpen: true,
       title: 'Konfirmasi',
       message: flow.msg,
-      action: () => {
-        // Update status di state saja (dummy)
-        setReport(prev => prev ? { ...prev, status: flow.db } : prev);
-        // Update juga di allReports agar laporan serupa ikut update
-        setAllReports(prev => prev.map(r => r.id === id ? { ...r, status: flow.db } : r));
+      action: async () => {
+        try {
+          const token = localStorage.getItem('token');
+          if (!token) {
+            alert('Sesi berakhir, silakan login ulang.');
+            window.location.href = '/login';
+            return;
+          }
+          const res = await fetch(`/api/reports/${id}/status`, {
+            method: 'PUT',
+            headers: { 
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ status: flow.db })
+          });
+          
+          if (res.status === 401) {
+            const data = await res.json();
+            if (data.reason === 'password_changed') {
+              alert('Password Anda telah diganti. Silakan login kembali.');
+            }
+            localStorage.removeItem('token');
+            localStorage.removeItem('userName');
+            window.location.href = '/login';
+            return;
+          }
+          
+          if (!res.ok) {
+            let errText = await res.text();
+            try {
+              const maybeJson = JSON.parse(errText);
+              errText = maybeJson.error || errText;
+            } catch (_) {}
+            alert(`Gagal mengubah status (${res.status}): ${errText}`);
+            return;
+          }
+
+          setReport({ ...report, status: flow.db });
+
+          // Refresh allReports dan similarReports agar status laporan serupa ikut update
+          const reportsRes = await fetch('/api/reports', {
+            headers: { 'Authorization': `Bearer ${token}` }
+          });
+          if (reportsRes.ok) {
+            const data = await reportsRes.json();
+            if (Array.isArray(data)) {
+              setAllReports(data);
+            }
+          }
+        } catch (e) {
+          alert('Terjadi kesalahan saat mengubah status.');
+        }
         setModal({ isOpen: false, title: '', message: '', action: null });
       }
     });
@@ -216,7 +273,55 @@ function DetailLaporan() {
       isOpen: true,
       title: 'Hapus Laporan',
       message: 'Yakin ingin menghapus laporan ini? Data tidak dapat dikembalikan.',
-      action: () => {
+      action: async () => {
+        try {
+          const token = localStorage.getItem('token');
+          if (!token) {
+            alert('Sesi berakhir, silakan login ulang.');
+            window.location.href = '/login';
+            return;
+          }
+          const res = await fetch(`/api/reports/${id}`, { 
+            method: 'DELETE',
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
+          });
+          
+          if (res.status === 401) {
+            const data = await res.json().catch(() => ({}));
+            if (data.reason === 'password_changed') alert('Password Anda telah diganti. Silakan login kembali.');
+            localStorage.clear();
+            window.location.href = '/login';
+            return;
+          }
+          
+          if (res.status === 429) {
+            alert('Terlalu banyak permintaan. Coba lagi sebentar lagi.');
+            return;
+          }
+
+          if (!res.ok) {
+            let errText = await res.text();
+            try {
+              const maybeJson = JSON.parse(errText);
+              errText = maybeJson.error || errText;
+            } catch (_) {}
+            alert(`Gagal menghapus laporan (${res.status}): ${errText}`);
+            return;
+          }
+
+          // Jika dibuka di tab baru, reload tab utama lalu tutup tab detail
+          if (window.opener && !window.opener.closed) {
+            window.opener.location.reload();
+            window.close();
+            return;
+          }
+          // Jika tidak, redirect ke daftar laporan
+          navigate('/laporan-aset');
+        } catch (e) {
+          alert('Terjadi kesalahan saat menghapus laporan.');
+        }
         setModal({ isOpen: false, title: '', message: '', action: null });
       }
     });

@@ -639,9 +639,10 @@
   font-size: 16px;
   font-weight: 800;
   display: block;
+  /* stretch edge-to-edge of the card top */
   margin: -20px -20px 16px -20px;
   padding: 16px 20px;
-  border-radius: 20px 20px 0 0; 
+  border-radius: 20px 20px 0 0; /* top-left/top-right only */
 }
 
 .similar-reports-list {
@@ -652,7 +653,7 @@
   padding-right: 4px;
   flex: 1;
   min-height: 0;
-  max-height: 470px; 
+  max-height: 470px; /* show ~3 items, scroll for the rest */
 }
 
 .similar-reports-list::-webkit-scrollbar {
