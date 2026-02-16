@@ -5,6 +5,10 @@ import LaporanAset from './admin/LaporanAset';
 import DetailLaporan from './admin/DetailLaporan';
 import TeknisiLaporanAset from './teknisi/TeknisiLaporanAset';
 import TeknisiLaporanDetail from './teknisi/TeknisiLaporanDetail';
+// import PelaporLogin from './pelapor/PelaporLogin';
+import PelaporLaporanForm from './pelapor/PelaporLaporanForm';
+import PelaporDaftarLaporan from './pelapor/PelaporDaftarLaporan';
+import PelaporDetailLaporan from './pelapor/PelaporDetailLaporan';
 import './App.css';
 import Footer from './shared/components/Footer';
 
@@ -13,10 +17,11 @@ function App() {
   const [userRole, setUserRole] = useState('');
   const [loading, setLoading] = useState(true);
 
-  // Memastikan state sudah sinkron sebelum render pertama
+  // Pastikan state sudah sinkron sebelum render pertama
   useLayoutEffect(() => {
     const token = localStorage.getItem('token');
     const role = localStorage.getItem('role');
+    // Semua role (admin, teknisi, pelapor) sekarang memerlukan token
     setIsAuthenticated(!!token);
     setUserRole(role || '');
     setLoading(false);
@@ -63,7 +68,7 @@ function App() {
   }, []);
 
   // Jangan render <Routes> jika userRole belum valid saat sudah login
-  if (loading || (isAuthenticated && userRole !== 'admin' && userRole !== 'teknisi')) {
+  if (loading || (isAuthenticated && userRole !== 'admin' && userRole !== 'teknisi' && userRole !== 'pelapor')) {
     return (
       <div style={{
         display: 'flex',
@@ -85,9 +90,11 @@ function App() {
           path="/"
           element={
             isAuthenticated
-              ? (userRole === 'teknisi'
-                  ? <Navigate to="/teknisi/laporan-aset" replace />
-                  : <Navigate to="/laporan-aset" replace />)
+              ? userRole === 'teknisi'
+                ? <Navigate to="/teknisi/laporan-aset" replace />
+                : userRole === 'pelapor'
+                  ? <Navigate to="/pelapor/inbox" replace />
+                  : <Navigate to="/laporan-aset" replace />
               : <Navigate to="/login" replace />
           }
         />
@@ -97,10 +104,45 @@ function App() {
           path="/login"
           element={
             isAuthenticated
-              ? (userRole === 'teknisi'
-                  ? <Navigate to="/teknisi/laporan-aset" replace />
-                  : <Navigate to="/laporan-aset" replace />)
+              ? userRole === 'teknisi'
+                ? <Navigate to="/teknisi/laporan-aset" replace />
+                : userRole === 'pelapor'
+                  ? <Navigate to="/pelapor/inbox" replace />
+                  : <Navigate to="/laporan-aset" replace />
               : <Login setAuth={setIsAuthenticated} setRole={setUserRole} />
+          }
+        />
+
+        {/* Pelapor login: redirect ke /login */}
+        <Route
+          path="/pelapor/login"
+          element={<Navigate to="/login" replace />}
+        />
+        {/* Pelapor dashboard utama: form + tombol ke inbox */}
+        <Route
+          path="/pelapor/inbox"
+          element={
+            isAuthenticated && userRole === 'pelapor'
+              ? <PelaporLaporanForm />
+              : <Navigate to="/pelapor/login" replace />
+          }
+        />
+        {/* Pelapor daftar laporan */}
+        <Route
+          path="/pelapor/daftar-laporan"
+          element={
+            isAuthenticated && userRole === 'pelapor'
+              ? <PelaporDaftarLaporan />
+              : <Navigate to="/pelapor/login" replace />
+          }
+        />
+        {/* Pelapor detail laporan */}
+        <Route
+          path="/pelapor/laporan/:id"
+          element={
+            isAuthenticated && userRole === 'pelapor'
+              ? <PelaporDetailLaporan />
+              : <Navigate to="/pelapor/login" replace />
           }
         />
 
@@ -111,7 +153,7 @@ function App() {
             isAuthenticated && userRole === 'admin'
               ? <LaporanAset />
               : isAuthenticated
-                ? <Navigate to={userRole === 'teknisi' ? "/teknisi/laporan-aset" : "/login"} replace />
+                ? <Navigate to={userRole === 'teknisi' ? "/teknisi/laporan-aset" : userRole === 'pelapor' ? "/pelapor/inbox" : "/login"} replace />
                 : <Navigate to="/login" />
           }
         />
@@ -122,7 +164,7 @@ function App() {
             isAuthenticated && userRole === 'admin'
               ? <DetailLaporan />
               : isAuthenticated
-                ? <Navigate to={userRole === 'teknisi' ? "/teknisi/laporan-aset" : "/login"} replace />
+                ? <Navigate to={userRole === 'teknisi' ? "/teknisi/laporan-aset" : userRole === 'pelapor' ? "/pelapor/inbox" : "/login"} replace />
                 : <Navigate to="/login" />
           }
         />
@@ -134,7 +176,7 @@ function App() {
             isAuthenticated && userRole === 'teknisi'
               ? <TeknisiLaporanAset />
               : isAuthenticated
-                ? <Navigate to={userRole === 'admin' ? "/laporan-aset" : "/login"} replace />
+                ? <Navigate to={userRole === 'admin' ? "/laporan-aset" : userRole === 'pelapor' ? "/pelapor/inbox" : "/login"} replace />
                 : <Navigate to="/login" />
           }
         />
@@ -145,7 +187,7 @@ function App() {
             isAuthenticated && userRole === 'teknisi'
               ? <TeknisiLaporanDetail />
               : isAuthenticated
-                ? <Navigate to={userRole === 'admin' ? "/laporan-aset" : "/login"} replace />
+                ? <Navigate to={userRole === 'admin' ? "/laporan-aset" : userRole === 'pelapor' ? "/pelapor/inbox" : "/login"} replace />
                 : <Navigate to="/login" />
           }
         />
