@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import Navbar from '../shared/components/Navbar';
 import '../admin/LaporanAset.css';
 import { useNavigate } from 'react-router-dom';
+import { API_URL } from '../config/api';
 
 const statusMap = {
   'Pending': 'To-Do',
@@ -50,7 +51,7 @@ function PelaporDaftarLaporan() {
       setLoading(true);
       try {
         const token = localStorage.getItem('token');
-        const url = '/api/pelapor/laporan';
+        const url = `${API_URL}/api/pelapor/laporan`;
         const res = await fetch(url, {
           headers: {
             'Authorization': `Bearer ${token}`

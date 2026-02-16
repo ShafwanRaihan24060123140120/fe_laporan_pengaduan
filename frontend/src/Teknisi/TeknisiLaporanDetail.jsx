@@ -116,7 +116,7 @@ export default function TeknisiLaporanDetail() {
           navigate('/login');
           return;
         }
-        const res = await fetch(`/api/teknisi/reports/${id}`, {
+        const res = await fetch(`${API_URL}/api/teknisi/reports/${id}`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         if (res.status === 401) {
@@ -219,7 +219,7 @@ export default function TeknisiLaporanDetail() {
       const hasEmptySlot = emptySlotIndex >= 0;
       const slotToReplace = hasEmptySlot ? emptySlotIndex + 1 : (currentSlot || 1);
 
-      const res = await fetch(`/api/teknisi/reports/${id}/images/${slotToReplace}`, {
+      const res = await fetch(`${API_URL}/api/teknisi/reports/${id}/images/${slotToReplace}`, {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${token}` },
         body: form
@@ -270,7 +270,7 @@ export default function TeknisiLaporanDetail() {
             return;
           }
 
-          const res = await fetch(`/api/teknisi/reports/${id}/images/${slot}`, {
+          const res = await fetch(`${API_URL}/api/teknisi/reports/${id}/images/${slot}`, {
             method: 'DELETE',
             headers: { 'Authorization': `Bearer ${token}` }
           });
@@ -325,7 +325,7 @@ export default function TeknisiLaporanDetail() {
             navigate('/login');
             return;
           }
-          const res = await fetch(`/api/teknisi/reports/${id}/status`, {
+          const res = await fetch(`${API_URL}/api/teknisi/reports/${id}/status`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
             body: JSON.stringify({ status: flow.db })

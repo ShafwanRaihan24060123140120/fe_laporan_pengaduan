@@ -120,7 +120,7 @@ function DetailLaporan() {
           window.location.href = '/login';
           return;
         }
-        const res = await fetch(`/api/reports/${id}`, {
+        const res = await fetch(`${API_URL}/api/reports/${id}`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -236,7 +236,7 @@ function DetailLaporan() {
             window.location.href = '/login';
             return;
           }
-          const res = await fetch(`/api/reports/${id}/status`, {
+          const res = await fetch(`${API_URL}/api/reports/${id}/status`, {
             method: 'PUT',
             headers: { 
               'Content-Type': 'application/json',
@@ -332,7 +332,7 @@ function DetailLaporan() {
             window.location.href = '/login';
             return;
           }
-          const res = await fetch(`/api/reports/${id}`, { 
+          const res = await fetch(`${API_URL}/api/reports/${id}`, {
             method: 'DELETE',
             headers: {
               'Authorization': `Bearer ${token}`

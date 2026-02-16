@@ -103,7 +103,7 @@ export default function PelaporDetailLaporan() {
     (async () => {
       try {
         const token = localStorage.getItem('token');
-        const res = await fetch(`/api/pelapor/laporan`, {
+        const res = await fetch(`${API_URL}/api/pelapor/laporan`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }
