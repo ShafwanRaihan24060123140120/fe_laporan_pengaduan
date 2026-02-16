@@ -3,9 +3,7 @@ import Navbar from '../shared/components/Navbar';
 import './DetailLaporan.css';
 import { useEffect, useState } from 'react';
 import ConfirmModal from '../shared/components/ConfirmModal';
-
-// API URL dari environment variable
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4001';
+import { API_URL } from '../config/api';
 
 const statusMap = {
   'Pending': 'To-Do',

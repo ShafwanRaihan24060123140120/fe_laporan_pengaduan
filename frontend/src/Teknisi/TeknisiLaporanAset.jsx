@@ -2,9 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../shared/components/Navbar';
 import './TeknisiLaporanAset.css';
-
-// API URL dari environment variable
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4001';
+import { API_URL } from '../config/api';
 
 const statusMap = {
   'Pending': 'To-Do',

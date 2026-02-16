@@ -3,9 +3,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Login.css';
 import TelkomLogo from './components/TelkomLogo';
-
-// API URL dari environment variable
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4001';
+import { API_URL } from '../config/api';
 
 // Komponen Login
 function Login({ setAuth, setRole }) {

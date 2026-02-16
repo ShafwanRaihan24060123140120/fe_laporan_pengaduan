@@ -3,9 +3,7 @@ import './Navbar.css';
 import { useState, useEffect, useRef } from 'react';
 import ConfirmModal from './ConfirmModal';
 import logoTelkom from '../assets/telkom-logo2.png';
-
-// API URL dari environment variable
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4001';
+import { API_URL } from '../../config/api';
 
 
 function Navbar({ searchTerm, onSearchChange, statusFilter, onStatusFilterChange }) {
