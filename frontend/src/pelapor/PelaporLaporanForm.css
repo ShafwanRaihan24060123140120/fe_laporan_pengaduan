@@ -305,7 +305,7 @@ html.pelapor-bg, body.pelapor-bg {
   overflow: hidden;
 }
 
-@keykey glassPop {
+@keyframes glassPop {
   0% {
     opacity: 0;
     transform: translateX(-50%) scale(0.95) translateY(-20px);
