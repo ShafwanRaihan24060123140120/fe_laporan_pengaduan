@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import Navbar from '../shared/components/Navbar';
-import '../teknisi/TeknisiLaporanDetail.css';
+import '../Teknisi/TeknisiLaporanDetail.css';
 import { API_URL } from '../config/api';
 
 const statusMap = {
