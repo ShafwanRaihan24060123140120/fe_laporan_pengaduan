@@ -89,9 +89,6 @@ function LaporanAset() {
   const { items, loading, error } = useReports(searchTerm);
   const navigate = useNavigate();
 
-  // Tidak perlu blokir back browser di sini. Biarkan user bisa kembali ke halaman lain (misal login, dashboard, dsb),
-  // tapi pastikan navigasi ke detail sudah SPA (navigate) agar tidak ada entry history baru ke detail.
-
   // Filter items berdasarkan status jika statusFilter dipilih
   const filteredItems = statusFilter
     ? items.filter(item => (statusMap[item.status] || item.status) === statusFilter)
@@ -109,7 +106,7 @@ function LaporanAset() {
         {loading && <div style={{textAlign:'center', color:'#666', padding:'20px'}}>Memuat data…</div>}
         {!loading && error && (
           <div style={{textAlign:'center', color:'#b00000', padding:'20px'}}>
-            {error}. Pastikan backend berjalan (npm start di folder server).
+            {error}. Pastikan backend berjalan.
           </div>
         )}
 
